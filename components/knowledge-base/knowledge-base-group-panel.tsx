@@ -500,30 +500,13 @@ export function KnowledgeBaseGroupPanel({
                   <div className="min-w-0 space-y-1">
                     {visibleArticles.map((article) => {
                       const isActive = selectedArticleId === article.id
-                      const PinIcon = article.isPinned ? IconPinned : IconPin
 
                       return (
                         <div
                           key={article.id}
                           className="group/article-item relative min-w-0"
                         >
-                          <Button
-                            type="button"
-                            variant={isActive ? "secondary" : "ghost"}
-                            className="h-10 w-full min-w-0 justify-start gap-2.5 overflow-hidden rounded-xl px-3.5 text-left whitespace-normal transition-[padding] group-focus-within/article-item:pr-17 group-hover/article-item:pr-17"
-                            aria-pressed={isActive}
-                            onClick={() => onSelectArticle(article.id)}
-                          >
-                            <IconFileText className="size-4 shrink-0 text-muted-foreground" />
-                            {article.isPinned ? (
-                              <IconPinned className="size-3.5 shrink-0 text-muted-foreground" />
-                            ) : null}
-                            <KnowledgeScrollingLabel className="flex-1 text-sm leading-none">
-                              {article.title}
-                            </KnowledgeScrollingLabel>
-                          </Button>
-
-                          <div className="pointer-events-none absolute top-1/2 right-1.5 flex -translate-y-1/2 items-center gap-0.5 opacity-0 transition-opacity group-focus-within/article-item:pointer-events-auto group-focus-within/article-item:opacity-100 group-hover/article-item:pointer-events-auto group-hover/article-item:opacity-100">
+                          {article.isPinned ? (
                             <Tooltip>
                               <TooltipTrigger
                                 render={
@@ -531,11 +514,9 @@ export function KnowledgeBaseGroupPanel({
                                     type="button"
                                     variant="ghost"
                                     size="icon-xs"
-                                    className="size-7 rounded-lg text-muted-foreground"
+                                    className="absolute top-1/2 left-2 z-10 size-7 -translate-y-1/2 rounded-lg text-muted-foreground"
                                     aria-label={
-                                      article.isPinned
-                                        ? knowledgeBasePageCopy.unpinArticleLabel
-                                        : knowledgeBasePageCopy.pinArticleLabel
+                                      knowledgeBasePageCopy.unpinArticleLabel
                                     }
                                     onClick={(event) => {
                                       event.stopPropagation()
@@ -544,14 +525,61 @@ export function KnowledgeBaseGroupPanel({
                                   />
                                 }
                               >
-                                <PinIcon className="size-3.5" />
+                                <IconPinned className="size-4" />
                               </TooltipTrigger>
                               <TooltipContent side="top">
-                                {article.isPinned
-                                  ? knowledgeBasePageCopy.unpinArticleLabel
-                                  : knowledgeBasePageCopy.pinArticleLabel}
+                                {knowledgeBasePageCopy.unpinArticleLabel}
                               </TooltipContent>
                             </Tooltip>
+                          ) : null}
+
+                          <Button
+                            type="button"
+                            variant={isActive ? "secondary" : "ghost"}
+                            className={cn(
+                              "h-10 w-full min-w-0 justify-start gap-2.5 overflow-hidden rounded-xl pr-3.5 text-left whitespace-normal transition-[padding]",
+                              article.isPinned
+                                ? "pl-10 group-focus-within/article-item:pr-10 group-hover/article-item:pr-10"
+                                : "pl-3.5 group-focus-within/article-item:pr-17 group-hover/article-item:pr-17"
+                            )}
+                            aria-pressed={isActive}
+                            onClick={() => onSelectArticle(article.id)}
+                          >
+                            {!article.isPinned ? (
+                              <IconFileText className="size-4 shrink-0 text-muted-foreground" />
+                            ) : null}
+                            <KnowledgeScrollingLabel className="flex-1 text-sm leading-none">
+                              {article.title}
+                            </KnowledgeScrollingLabel>
+                          </Button>
+
+                          <div className="pointer-events-none absolute top-1/2 right-1.5 flex -translate-y-1/2 items-center gap-0.5 opacity-0 transition-opacity group-focus-within/article-item:pointer-events-auto group-focus-within/article-item:opacity-100 group-hover/article-item:pointer-events-auto group-hover/article-item:opacity-100">
+                            {!article.isPinned ? (
+                              <Tooltip>
+                                <TooltipTrigger
+                                  render={
+                                    <Button
+                                      type="button"
+                                      variant="ghost"
+                                      size="icon-xs"
+                                      className="size-7 rounded-lg text-muted-foreground"
+                                      aria-label={
+                                        knowledgeBasePageCopy.pinArticleLabel
+                                      }
+                                      onClick={(event) => {
+                                        event.stopPropagation()
+                                        onToggleArticlePin(article.id)
+                                      }}
+                                    />
+                                  }
+                                >
+                                  <IconPin className="size-3.5" />
+                                </TooltipTrigger>
+                                <TooltipContent side="top">
+                                  {knowledgeBasePageCopy.pinArticleLabel}
+                                </TooltipContent>
+                              </Tooltip>
+                            ) : null}
 
                             <Tooltip>
                               <TooltipTrigger

@@ -903,10 +903,6 @@ export const knowledgeArticles: KnowledgeArticle[] = withKnowledgeArticleDiscuss
         title: "Troubleshooting",
         body: "If Add seats is disabled, check whether the account is on a trial, has an unpaid invoice, uses reseller billing, or has a pending subscription change. Escalate to Billing Operations when the invoice preview fails to load.",
       },
-      {
-        title: "Suggested customer reply",
-        body: "An account admin can add seats from Admin Center > Account > Billing > Subscription. Before confirming, they will see the prorated charge for this billing cycle and the updated renewal amount.",
-      },
     ],
     customerReply:
       "An account admin can add seats from Admin Center > Account > Billing > Subscription. Before confirming, they will see the prorated charge for this billing cycle and the updated renewal amount.",
@@ -928,6 +924,498 @@ export const knowledgeArticles: KnowledgeArticle[] = withKnowledgeArticleDiscuss
         tone: "neutral",
       },
     ],
+  },
+  {
+    id: "kb-update-payment-method",
+    title: "Update payment method before renewal",
+    summary:
+      "Help billing owners replace an expiring card, confirm the default payment method, and retry open invoices before renewal.",
+    category: "billing",
+    status: "published",
+    updatedAt: "Updated 2 days ago",
+    author: { name: "Nina Flores" },
+    matchScore: "high",
+    views: 296,
+    helpfulRate: 86,
+    linkedTickets: 18,
+    matchReasons: ["payment method", "card", "renewal", "retry invoice"],
+    quickPath: "Admin Center > Billing > Payment methods",
+    media: [sharedPreviewImage],
+    sections: [
+      {
+        title: "When to use this article",
+        body: "Use this when a customer needs to replace an expired card, confirm which card will be charged at renewal, or retry a failed invoice after updating payment details.",
+      },
+      {
+        title: "Who can update payment",
+        body: "Only billing owners and account admins with billing permissions can add, remove, or set the default payment method. Members can view neither full card details nor invoice retry controls.",
+      },
+      {
+        title: "Set the default card",
+        body: "Open Payment methods, add the new card, complete any 3DS confirmation, then set it as default before removing the old card. Leaving the old card as default can cause the next retry to fail again.",
+      },
+      {
+        title: "Retry an open invoice",
+        body: "After the card is set as default, return to Invoices and choose Retry payment on the open invoice. The invoice status updates after the processor confirms the charge.",
+      },
+      {
+        title: "Escalation checks",
+        body: "Escalate to Billing Operations if the card token saves successfully but invoice retry fails with processor_unavailable, duplicate charge warning, or a mismatch between invoice currency and payment method region.",
+      },
+    ],
+    customerReply:
+      "A billing owner can update the default card from Admin Center > Billing > Payment methods, then retry any open invoice from Billing > Invoices.",
+  },
+  {
+    id: "kb-cancel-subscription-at-renewal",
+    title: "Cancel subscription at renewal",
+    summary:
+      "Explain how billing owners schedule cancellation, what happens to access, and how to reverse the cancellation before renewal.",
+    category: "subscription",
+    status: "needs-review",
+    updatedAt: "Updated 4 days ago",
+    author: { name: "Santi Cazorla" },
+    matchScore: "medium",
+    views: 184,
+    helpfulRate: 73,
+    linkedTickets: 12,
+    matchReasons: ["cancel subscription", "renewal", "plan", "downgrade"],
+    quickPath: "Admin Center > Billing > Subscription > Cancel plan",
+    media: [sharedPreviewImage],
+    sections: [
+      {
+        title: "Cancellation timing",
+        body: "Most paid plans can be scheduled to cancel at the end of the current billing period. Immediate cancellation requires billing review when the account has open invoices, annual commitments, or reseller billing.",
+      },
+      {
+        title: "Access after scheduling",
+        body: "The workspace remains active until the renewal date. Admins can still add or remove members, export data, and reverse the cancellation before the scheduled end date.",
+      },
+      {
+        title: "What the customer sees",
+        body: "The subscription page shows the scheduled cancellation date, renewal amount set to zero, and a banner explaining when paid features will stop.",
+      },
+      {
+        title: "Reverse cancellation",
+        body: "Billing owners can choose Keep subscription before the scheduled cancellation date. The workspace returns to the previous renewal state without needing a new checkout.",
+      },
+      {
+        title: "Before closing the ticket",
+        body: "Confirm whether the customer needs a data export, invoice copy, or downgrade alternative. Do not promise refunds unless the billing policy and finance review both support it.",
+      },
+    ],
+    customerReply:
+      "A billing owner can schedule cancellation from Billing > Subscription. The workspace stays active until the current billing period ends, and the cancellation can be reversed before that date.",
+  },
+  {
+    id: "kb-invoice-recipient-update",
+    title: "Change invoice recipients",
+    summary:
+      "Show admins how to add finance contacts, send invoice copies, and keep billing emails separate from workspace ownership.",
+    category: "billing",
+    status: "published",
+    updatedAt: "Updated 6 days ago",
+    author: { name: "Arlene McCoy" },
+    matchScore: "medium",
+    views: 147,
+    helpfulRate: 82,
+    linkedTickets: 9,
+    matchReasons: ["invoice recipient", "billing email", "finance contact", "invoice copy"],
+    quickPath: "Admin Center > Billing > Billing profile > Invoice recipients",
+    media: [sharedPreviewImage],
+    sections: [
+      {
+        title: "Recipient types",
+        body: "Invoice recipients receive invoice and receipt emails but do not automatically get workspace admin permissions. This is useful for finance teams that should receive billing records only.",
+      },
+      {
+        title: "Add or remove recipients",
+        body: "Open Billing profile, edit Invoice recipients, then add the finance contact email. Removed recipients stop receiving future invoices but past email deliveries cannot be recalled.",
+      },
+      {
+        title: "Send a copy of a past invoice",
+        body: "From Invoices, open the invoice detail and choose Send copy. The copy goes to active invoice recipients and the billing owner unless a specific recipient is selected.",
+      },
+      {
+        title: "Verification notes",
+        body: "Some enterprise accounts require recipient verification before the first invoice email is delivered. Ask the customer to check spam filters and allow billing sender domains.",
+      },
+      {
+        title: "Common confusion",
+        body: "Changing invoice recipients does not change the billing owner, legal company name, tax ID, or default payment method.",
+      },
+    ],
+    customerReply:
+      "You can add finance contacts from Billing profile > Invoice recipients. They will receive future invoice emails without gaining workspace admin access.",
+  },
+  {
+    id: "kb-usage-overage-explained",
+    title: "Usage overage charges explained",
+    summary:
+      "Clarify why usage-based charges appear, how customers can review consumption, and what to check before disputing an invoice.",
+    category: "billing",
+    status: "draft",
+    updatedAt: "Updated 1 week ago",
+    author: { name: "Nina Flores" },
+    matchScore: "medium",
+    views: 121,
+    helpfulRate: 70,
+    linkedTickets: 6,
+    matchReasons: ["overage", "usage", "invoice", "charge"],
+    quickPath: "Admin Center > Billing > Usage",
+    media: [sharedPreviewImage],
+    sections: [
+      {
+        title: "What counts as usage",
+        body: "Usage charges can come from automation runs, integration events, data exports, or seats above plan allowance depending on the customer's contract.",
+      },
+      {
+        title: "Where to review usage",
+        body: "Billing owners can open Usage to see the current cycle total, recent daily usage, and projected invoice impact before renewal.",
+      },
+      {
+        title: "Invoice timing",
+        body: "Usage is usually billed at the end of the cycle. Late-arriving integration events can appear after the customer first checks the usage page.",
+      },
+      {
+        title: "Dispute preparation",
+        body: "Before escalating, capture the invoice number, usage category, date range, and any customer-provided internal usage logs. Finance needs those details to reconcile the charge.",
+      },
+      {
+        title: "Reduce future overage",
+        body: "Suggest usage alerts, automation throttles, or plan review when the customer repeatedly exceeds included limits.",
+      },
+    ],
+    customerReply:
+      "You can review usage from Admin Center > Billing > Usage. If a charge still looks unexpected, send us the invoice number and usage category so we can reconcile it.",
+  },
+  {
+    id: "kb-billing-address-tax-id",
+    title: "Update billing address and tax ID",
+    summary:
+      "Help billing owners update legal billing details, understand when tax IDs appear, and avoid mismatched invoice records.",
+    category: "billing",
+    status: "published",
+    updatedAt: "Updated 2 days ago",
+    author: { name: "Arlene McCoy" },
+    matchScore: "high",
+    views: 231,
+    helpfulRate: 87,
+    linkedTickets: 15,
+    matchReasons: ["billing address", "tax id", "vat", "company name"],
+    quickPath: "Admin Center > Billing > Billing profile",
+    media: [sharedPreviewImage],
+    sections: [
+      {
+        title: "What can be changed",
+        body: "Billing owners can update legal company name, billing address, tax ID, and invoice email details from the billing profile.",
+      },
+      {
+        title: "When changes apply",
+        body: "Profile changes apply to future invoices. Past invoices keep the legal details that were active when the invoice was issued.",
+      },
+      {
+        title: "Tax validation",
+        body: "Tax IDs may require validation before appearing on invoices. Ask customers to confirm country, registration number, and legal company name match their tax record.",
+      },
+      {
+        title: "Past invoice corrections",
+        body: "Do not promise reissued invoices automatically. Escalate to Billing Operations when a customer needs a corrected invoice for a closed billing period.",
+      },
+      {
+        title: "Common confusion",
+        body: "Changing the billing profile does not change workspace owner, payment method, invoice recipients, or account display name.",
+      },
+    ],
+    customerReply:
+      "A billing owner can update legal billing details from Billing > Billing profile. The updated details apply to future invoices; past invoice corrections need billing review.",
+  },
+  {
+    id: "kb-purchase-order-number",
+    title: "Add purchase order number to invoices",
+    summary:
+      "Show finance teams where to store a PO number and explain which future invoices will include the reference.",
+    category: "billing",
+    status: "published",
+    updatedAt: "Updated 3 days ago",
+    author: { name: "Nina Flores" },
+    matchScore: "medium",
+    views: 143,
+    helpfulRate: 79,
+    linkedTickets: 8,
+    matchReasons: ["purchase order", "po number", "invoice reference", "finance"],
+    quickPath: "Admin Center > Billing > Billing profile > Invoice details",
+    media: [sharedPreviewImage],
+    sections: [
+      {
+        title: "Where to add the PO",
+        body: "Billing owners can add a purchase order number from Billing profile under Invoice details. The value appears in the invoice reference area.",
+      },
+      {
+        title: "Future invoice behavior",
+        body: "The PO number applies to invoices generated after the value is saved. Existing invoices do not update retroactively.",
+      },
+      {
+        title: "Character limits",
+        body: "PO fields should stay short and plain text. If the customer needs multiple finance references, recommend using the billing note field when available.",
+      },
+      {
+        title: "Renewal preparation",
+        body: "Ask finance teams to add or update the PO before renewal week so the next invoice is generated with the correct reference.",
+      },
+      {
+        title: "Escalation",
+        body: "Escalate only when the PO was saved before invoice generation but does not appear on the issued invoice.",
+      },
+    ],
+    customerReply:
+      "You can add the PO number from Billing profile > Invoice details. It will appear on future invoices generated after the update is saved.",
+  },
+  {
+    id: "kb-refund-credit-request",
+    title: "Request refund or account credit",
+    summary:
+      "Guide agents through refund eligibility, credit alternatives, and the details Billing Operations needs before review.",
+    category: "billing",
+    status: "needs-review",
+    updatedAt: "Updated 4 days ago",
+    author: { name: "Santi Cazorla" },
+    matchScore: "medium",
+    views: 168,
+    helpfulRate: 74,
+    linkedTickets: 11,
+    matchReasons: ["refund", "credit", "invoice adjustment", "billing review"],
+    quickPath: "Admin Center > Billing > Invoices > Invoice detail",
+    media: [sharedPreviewImage],
+    sections: [
+      {
+        title: "Start with policy",
+        body: "Refunds depend on plan terms, billing period, contract commitments, and whether the charge was caused by product error or customer-requested change.",
+      },
+      {
+        title: "Credit alternative",
+        body: "When a cash refund is not available, Billing Operations may offer account credit toward a future invoice if policy allows it.",
+      },
+      {
+        title: "Required details",
+        body: "Capture invoice number, charge amount, reason for request, requested outcome, and any supporting context before escalating.",
+      },
+      {
+        title: "What agents can say",
+        body: "Agents can confirm they will request review. They should not promise approval, timing, or exact refund method before billing review is complete.",
+      },
+      {
+        title: "Follow-up expectation",
+        body: "Billing Operations responds after checking payment status, contract terms, and prior credits on the account.",
+      },
+    ],
+    customerReply:
+      "I can request a billing review for this charge. Please share the invoice number and reason for the refund or credit request so Billing Operations can evaluate it.",
+  },
+  {
+    id: "kb-reseller-billing-managed-account",
+    title: "Reseller-managed billing account",
+    summary:
+      "Explain why direct billing controls are disabled when an account is billed through a partner or reseller.",
+    category: "billing",
+    status: "published",
+    updatedAt: "Updated 5 days ago",
+    author: { name: "Nina Flores" },
+    matchScore: "medium",
+    views: 126,
+    helpfulRate: 76,
+    linkedTickets: 7,
+    matchReasons: ["reseller", "partner billing", "billing disabled", "managed account"],
+    quickPath: "Admin Center > Billing > Subscription",
+    media: [sharedPreviewImage],
+    sections: [
+      {
+        title: "Why controls are disabled",
+        body: "Payment method, invoice download, plan changes, and cancellation controls may be disabled when the account is billed through a reseller.",
+      },
+      {
+        title: "Who owns invoices",
+        body: "The reseller usually issues invoices and manages payment terms directly with the customer. The workspace may only show subscription summary details.",
+      },
+      {
+        title: "What support can do",
+        body: "Support can confirm the account is reseller-managed and direct the customer to the partner contact listed in billing settings when available.",
+      },
+      {
+        title: "Plan changes",
+        body: "Seat additions, plan upgrades, cancellations, and contract changes need reseller coordination unless the account has been transferred back to direct billing.",
+      },
+      {
+        title: "Escalation",
+        body: "Escalate if the customer believes reseller billing is wrong, the listed partner is outdated, or direct billing controls should be restored.",
+      },
+    ],
+    customerReply:
+      "This workspace appears to be billed through a reseller, so direct invoice and payment controls may be disabled. Please contact the listed partner for billing changes.",
+  },
+  {
+    id: "kb-renewal-date-change",
+    title: "Change subscription renewal date",
+    summary:
+      "Set expectations for renewal date changes, proration review, and contract alignment before customers plan billing changes.",
+    category: "subscription",
+    status: "draft",
+    updatedAt: "Updated 6 days ago",
+    author: { name: "Arlene McCoy" },
+    matchScore: "low",
+    views: 94,
+    helpfulRate: 68,
+    linkedTickets: 5,
+    matchReasons: ["renewal date", "billing cycle", "proration", "contract"],
+    quickPath: "Admin Center > Billing > Subscription",
+    media: [sharedPreviewImage],
+    sections: [
+      {
+        title: "Self-service availability",
+        body: "Most renewal dates cannot be changed directly from the workspace because billing cycles are tied to invoice generation and contract terms.",
+      },
+      {
+        title: "When review is possible",
+        body: "Billing Operations may review date alignment for enterprise contract changes, finance calendar alignment, or migration from reseller to direct billing.",
+      },
+      {
+        title: "Proration impact",
+        body: "Changing renewal timing can create prorated charges or credits. Do not quote an amount until Billing Operations provides the calculation.",
+      },
+      {
+        title: "Required context",
+        body: "Collect current renewal date, desired date, reason for change, plan type, and whether the account has open invoices.",
+      },
+      {
+        title: "Alternatives",
+        body: "If the date cannot change, suggest invoice recipient updates or PO notes to help the customer's finance process.",
+      },
+    ],
+    customerReply:
+      "Renewal date changes require billing review because they can affect invoices and proration. Please share the desired date and reason so Billing Operations can evaluate it.",
+  },
+  {
+    id: "kb-upgrade-plan-midcycle",
+    title: "Upgrade plan mid-cycle",
+    summary:
+      "Explain how admins can upgrade during an active billing cycle, what becomes available immediately, and how proration is calculated.",
+    category: "subscription",
+    status: "published",
+    updatedAt: "Updated 1 week ago",
+    author: { name: "Santi Cazorla" },
+    matchScore: "high",
+    views: 253,
+    helpfulRate: 88,
+    linkedTickets: 19,
+    matchReasons: ["upgrade plan", "mid cycle", "features", "proration"],
+    quickPath: "Admin Center > Billing > Subscription > Change plan",
+    media: [sharedPreviewImage],
+    sections: [
+      {
+        title: "Who can upgrade",
+        body: "Billing owners and account admins with plan permissions can upgrade a paid subscription from the subscription page.",
+      },
+      {
+        title: "Preview before confirming",
+        body: "The checkout preview shows new plan price, prorated charge for the current cycle, next renewal amount, and payment method.",
+      },
+      {
+        title: "Feature availability",
+        body: "Most upgraded features become available immediately after confirmation. Some limits refresh after background entitlement sync completes.",
+      },
+      {
+        title: "Open invoice check",
+        body: "If the account has an unpaid invoice, the upgrade button may be disabled until the invoice is resolved.",
+      },
+      {
+        title: "After upgrade",
+        body: "Recommend confirming seat limits, feature access, and billing contact details before closing the ticket.",
+      },
+    ],
+    customerReply:
+      "A billing owner can upgrade from Billing > Subscription > Change plan. The checkout preview shows the prorated charge and updated renewal amount before confirmation.",
+  },
+  {
+    id: "kb-downgrade-plan-limitations",
+    title: "Downgrade plan limitations",
+    summary:
+      "Prepare customers for downgrade requirements, feature loss, seat limits, and timing before changing to a lower plan.",
+    category: "subscription",
+    status: "needs-review",
+    updatedAt: "Updated 8 days ago",
+    author: { name: "Nina Flores" },
+    matchScore: "medium",
+    views: 137,
+    helpfulRate: 72,
+    linkedTickets: 9,
+    matchReasons: ["downgrade", "plan limits", "feature loss", "seats"],
+    quickPath: "Admin Center > Billing > Subscription > Change plan",
+    media: [sharedPreviewImage],
+    sections: [
+      {
+        title: "Timing",
+        body: "Downgrades usually take effect at the next renewal so the customer can continue using paid features for the current billing period.",
+      },
+      {
+        title: "Plan requirements",
+        body: "The workspace may need to reduce seats, remove advanced automation rules, or disable premium integrations before the downgrade can be scheduled.",
+      },
+      {
+        title: "Data retention",
+        body: "Historical records are typically retained, but access to premium views or exports may be limited after the downgrade takes effect.",
+      },
+      {
+        title: "Customer preparation",
+        body: "Encourage admins to export needed reports and review automation dependencies before the renewal date.",
+      },
+      {
+        title: "Escalate when",
+        body: "Escalate if the customer needs an immediate downgrade, contract exception, or assurance about a feature not listed in the downgrade preview.",
+      },
+    ],
+    customerReply:
+      "Downgrades usually take effect at renewal. The preview will show any seat, feature, or integration changes needed before the lower plan can be scheduled.",
+  },
+  {
+    id: "kb-billing-owner-transfer",
+    title: "Transfer billing owner role",
+    summary:
+      "Help admins move billing ownership to the right finance or operations contact without interrupting subscription management.",
+    category: "billing",
+    status: "published",
+    updatedAt: "Updated 9 days ago",
+    author: { name: "Arlene McCoy" },
+    matchScore: "medium",
+    views: 156,
+    helpfulRate: 81,
+    linkedTickets: 8,
+    matchReasons: ["billing owner", "transfer", "finance", "admin"],
+    quickPath: "Admin Center > Billing > Billing profile > Billing owner",
+    media: [sharedPreviewImage],
+    sections: [
+      {
+        title: "Who can transfer",
+        body: "Current billing owners and workspace owners can assign a new billing owner when the recipient is already an active admin.",
+      },
+      {
+        title: "Recipient requirements",
+        body: "The new billing owner should have a verified email, admin access, and permission to manage invoices, payment methods, and subscription changes.",
+      },
+      {
+        title: "What changes",
+        body: "The new billing owner receives billing notifications and can update payment details. Workspace ownership and security ownership do not change.",
+      },
+      {
+        title: "Before transferring",
+        body: "Confirm invoice recipients, payment method access, and finance contact details so no renewal notices are missed.",
+      },
+      {
+        title: "If the current owner left",
+        body: "Use workspace owner verification or support-assisted recovery when the current billing owner is no longer available.",
+      },
+    ],
+    customerReply:
+      "A workspace owner or current billing owner can transfer billing ownership from Billing profile once the recipient is an active admin.",
   },
   {
     id: "kb-login-reset",
@@ -986,6 +1474,170 @@ export const knowledgeArticles: KnowledgeArticle[] = withKnowledgeArticleDiscuss
     ],
     customerReply:
       "If you still have your backup codes, use one to sign in and set up a new authenticator device. If not, we can help after account verification.",
+  },
+  {
+    id: "kb-sso-login-failed",
+    title: "SSO login failed for managed users",
+    summary:
+      "Troubleshoot SAML and OIDC sign-in failures caused by IdP assignment, domain mismatch, or stale workspace metadata.",
+    category: "account-login",
+    status: "published",
+    updatedAt: "Updated 3 days ago",
+    author: { name: "Priya Desai" },
+    matchScore: "high",
+    views: 226,
+    helpfulRate: 84,
+    linkedTickets: 16,
+    matchReasons: ["sso", "saml", "oidc", "login failed", "idp"],
+    quickPath: "Admin Center > Security > Single sign-on",
+    media: [sharedPreviewImage],
+    sections: [
+      {
+        title: "Start with the error",
+        body: "Ask for the exact error shown after redirect. Invalid audience, user not assigned, and email domain mismatch point to different SSO configuration checks.",
+      },
+      {
+        title: "Confirm user assignment",
+        body: "The customer must be assigned to the application in the identity provider and must use an email domain claimed by the workspace.",
+      },
+      {
+        title: "Check workspace metadata",
+        body: "If certificates or callback URLs changed recently, have an admin download the latest service provider metadata and update the identity provider configuration.",
+      },
+      {
+        title: "Bypass options",
+        body: "Do not recommend password reset for SSO-enforced users. If the admin is locked out, use the verified owner recovery path instead.",
+      },
+      {
+        title: "Escalation packet",
+        body: "Collect workspace slug, IdP name, timestamp, request ID, and the SAML or OIDC error text before escalating to Security Support.",
+      },
+    ],
+    customerReply:
+      "SSO failures usually come from IdP assignment, domain mismatch, or stale metadata. Please confirm the user is assigned in your identity provider and share the exact error if it still fails.",
+  },
+  {
+    id: "kb-invite-expired",
+    title: "Workspace invite expired",
+    summary:
+      "Guide admins through resending invitations, checking member status, and resolving email filters that block invite delivery.",
+    category: "account-login",
+    status: "published",
+    updatedAt: "Updated 5 days ago",
+    author: { name: "Amina Rahman" },
+    matchScore: "medium",
+    views: 168,
+    helpfulRate: 79,
+    linkedTickets: 8,
+    matchReasons: ["invite", "expired", "resend", "member"],
+    quickPath: "Admin Center > Members > Pending invites",
+    media: [sharedPreviewImage],
+    sections: [
+      {
+        title: "Invite lifetime",
+        body: "Workspace invitations expire after a limited window for security. Expired links cannot be reactivated; an admin needs to send a fresh invite.",
+      },
+      {
+        title: "Resend from pending invites",
+        body: "Open Pending invites, find the email address, and choose Resend invite. If the email was typed incorrectly, delete the pending invite and create a new one.",
+      },
+      {
+        title: "Email delivery checks",
+        body: "Ask the recipient to check spam filters and allow the workspace invitation sender. Enterprise mail gateways may quarantine invite links.",
+      },
+      {
+        title: "Existing account conflict",
+        body: "If the user already belongs to another workspace, they should accept the invite from the same browser profile where they are signed in with the invited email.",
+      },
+      {
+        title: "Admin-facing note",
+        body: "Resending an invite does not change the assigned role, team, or seat allocation. Edit those values before resending if the original invite was wrong.",
+      },
+    ],
+    customerReply:
+      "An admin can resend the invite from Admin Center > Members > Pending invites. If the email was mistyped, delete the pending invite and create a new one.",
+  },
+  {
+    id: "kb-role-permission-denied",
+    title: "Role permission denied message",
+    summary:
+      "Explain why users see permission errors and how admins can confirm role, team, and feature entitlement access.",
+    category: "account-login",
+    status: "published",
+    updatedAt: "Updated 6 days ago",
+    author: { name: "Liam Chen" },
+    matchScore: "medium",
+    views: 139,
+    helpfulRate: 76,
+    linkedTickets: 7,
+    matchReasons: ["permission denied", "role", "access", "admin"],
+    quickPath: "Admin Center > Members > Roles",
+    media: [sharedPreviewImage],
+    sections: [
+      {
+        title: "Common causes",
+        body: "Permission errors usually mean the user has the wrong role, belongs to the wrong team, or the workspace plan does not include the feature they are trying to open.",
+      },
+      {
+        title: "Check role assignment",
+        body: "Admins should open the member profile and confirm role, team membership, and any feature-specific permission toggles.",
+      },
+      {
+        title: "Plan entitlement",
+        body: "Some admin surfaces only appear on advanced plans. If the role is correct but the page is still hidden, check the subscription entitlement before escalating.",
+      },
+      {
+        title: "Session refresh",
+        body: "After a role change, ask the user to refresh the app or sign out and back in. Permission claims can remain cached in an active session for a short time.",
+      },
+      {
+        title: "What not to suggest",
+        body: "Do not tell a customer to create a second account to bypass permissions. That creates audit and billing confusion.",
+      },
+    ],
+    customerReply:
+      "This usually means your role or team permissions need to be updated. Ask a workspace admin to confirm your role in Admin Center > Members > Roles.",
+  },
+  {
+    id: "kb-session-timeout-policy",
+    title: "Session timeout and forced sign-out",
+    summary:
+      "Clarify why users are signed out, how admin security policies affect session length, and what support can safely recommend.",
+    category: "account-login",
+    status: "draft",
+    updatedAt: "Updated 1 week ago",
+    author: { name: "Priya Desai" },
+    matchScore: "low",
+    views: 97,
+    helpfulRate: 69,
+    linkedTickets: 4,
+    matchReasons: ["session", "timeout", "signed out", "security policy"],
+    quickPath: "Admin Center > Security > Session policy",
+    media: [sharedPreviewImage],
+    sections: [
+      {
+        title: "Why sign-out happens",
+        body: "Users can be signed out by inactivity timeout, admin-initiated session revocation, password changes, SSO policy changes, or browser cookie cleanup.",
+      },
+      {
+        title: "Admin policy check",
+        body: "Workspace admins can review session timeout settings from Security > Session policy. Enterprise policies may enforce shorter sessions for all managed users.",
+      },
+      {
+        title: "Customer troubleshooting",
+        body: "Ask whether sign-out happens across all browsers or only one device. Device-specific reports often point to blocked cookies or local storage cleanup.",
+      },
+      {
+        title: "Security-sensitive wording",
+        body: "Do not disclose whether another admin revoked a session unless the requester has the required security role.",
+      },
+      {
+        title: "Escalate when",
+        body: "Escalate if active sessions end immediately after sign-in across multiple browsers and no workspace policy explains the behavior.",
+      },
+    ],
+    customerReply:
+      "Forced sign-out can come from workspace session policy, SSO changes, or local browser storage. A workspace admin can review the session policy in Security settings.",
   },
   {
     id: "kb-card-charge-failed",
@@ -1278,6 +1930,334 @@ export const knowledgeArticles: KnowledgeArticle[] = withKnowledgeArticleDiscuss
       "Your domain record may still be propagating. Please confirm the TXT record exactly matches the latest verification value and allow additional DNS propagation time.",
   },
   {
+    id: "kb-email-not-delivered",
+    title: "Customer emails not delivered",
+    summary:
+      "Troubleshoot missing transactional emails, blocked sender domains, bounced recipients, and delayed delivery queues.",
+    category: "technical",
+    status: "published",
+    updatedAt: "Updated 2 days ago",
+    author: { name: "Amina Rahman" },
+    matchScore: "high",
+    views: 218,
+    helpfulRate: 82,
+    linkedTickets: 13,
+    matchReasons: ["email", "not delivered", "bounce", "spam"],
+    quickPath: "Settings > Email logs",
+    media: [sharedPreviewImage],
+    sections: [
+      {
+        title: "Start with delivery logs",
+        body: "Open Email logs and search by recipient email, event type, and approximate timestamp. Delivered, bounced, deferred, and suppressed statuses require different next steps.",
+      },
+      {
+        title: "Bounce and suppression",
+        body: "If the address is suppressed after repeated bounces, ask the customer to confirm the mailbox exists before requesting suppression removal.",
+      },
+      {
+        title: "Spam filter checks",
+        body: "Ask the customer's IT team to allow the sender domain and IP pool. Enterprise filters can accept the message but quarantine links silently.",
+      },
+      {
+        title: "Delayed delivery",
+        body: "Deferred delivery usually means the receiving server asked us to retry later. Avoid promising immediate delivery while the retry window is active.",
+      },
+      {
+        title: "Escalation detail",
+        body: "Escalate with recipient, message type, timestamp, delivery status, and message ID. Engineering cannot investigate quickly from a screenshot alone.",
+      },
+    ],
+    customerReply:
+      "We can check delivery logs for the recipient and message type. Please confirm the recipient email and approximate time the email should have arrived.",
+  },
+  {
+    id: "kb-import-csv-validation",
+    title: "CSV import validation errors",
+    summary:
+      "Help customers resolve import failures caused by required fields, duplicate IDs, invalid dates, and malformed CSV encoding.",
+    category: "technical",
+    status: "published",
+    updatedAt: "Updated 5 days ago",
+    author: { name: "Jerome Bell" },
+    matchScore: "medium",
+    views: 164,
+    helpfulRate: 77,
+    linkedTickets: 9,
+    matchReasons: ["csv", "import", "validation", "upload failed"],
+    quickPath: "Settings > Data import > Import history",
+    media: [sharedPreviewImage],
+    sections: [
+      {
+        title: "Download the error file",
+        body: "Import history includes a row-level error file when validation fails. Ask the customer to download it before editing the source spreadsheet.",
+      },
+      {
+        title: "Required fields",
+        body: "Name, email, external ID, and workspace ID may be required depending on import type. Blank required values cause the entire row to be skipped.",
+      },
+      {
+        title: "Duplicate identifiers",
+        body: "Duplicate external IDs or email addresses can update existing records unexpectedly. Have the customer de-duplicate before retrying.",
+      },
+      {
+        title: "Date and encoding issues",
+        body: "Use ISO date format when possible and export CSV as UTF-8. Smart quotes, hidden formulas, and region-specific date formats are common causes of validation errors.",
+      },
+      {
+        title: "Safe retry",
+        body: "Retry with a small sample file first. Once the sample imports cleanly, use the corrected full file.",
+      },
+    ],
+    customerReply:
+      "Please download the row-level error file from Import history, correct the listed fields, and retry with a small sample before uploading the full CSV again.",
+  },
+  {
+    id: "kb-report-loading-slow",
+    title: "Report loading slowly",
+    summary:
+      "Diagnose slow dashboard and report loads by checking date range, filters, workspace size, and recent background processing.",
+    category: "technical",
+    status: "needs-review",
+    updatedAt: "Updated 1 week ago",
+    author: { name: "Nina Flores" },
+    matchScore: "medium",
+    views: 102,
+    helpfulRate: 71,
+    linkedTickets: 5,
+    matchReasons: ["report", "slow", "dashboard", "loading"],
+    quickPath: "Reports > Performance diagnostics",
+    media: [sharedPreviewImage],
+    sections: [
+      {
+        title: "Narrow the report",
+        body: "Ask the customer to test a smaller date range and fewer segment filters. Very broad reports can trigger larger warehouse scans.",
+      },
+      {
+        title: "Check background processing",
+        body: "Recent imports, automation runs, or large exports can delay report refreshes while derived metrics catch up.",
+      },
+      {
+        title: "Browser versus account issue",
+        body: "If the report loads slowly for one user only, test a private window and another browser. If every admin sees it, capture workspace-level details.",
+      },
+      {
+        title: "What to capture",
+        body: "Collect report name, date range, filters, workspace size, timestamp, and whether the loading state eventually completes or fails.",
+      },
+      {
+        title: "Temporary workaround",
+        body: "Suggest exporting a narrower report or saving a filtered view while support investigates the broader report.",
+      },
+    ],
+    customerReply:
+      "Please try a narrower date range and fewer filters first. If the report is still slow, send the report name, filters, and approximate load time so we can investigate.",
+  },
+  {
+    id: "kb-mobile-push-notifications",
+    title: "Mobile push notifications not arriving",
+    summary:
+      "Troubleshoot missing mobile alerts across device permissions, workspace notification rules, and quiet-hours settings.",
+    category: "technical",
+    status: "draft",
+    updatedAt: "Updated 8 days ago",
+    author: { name: "Liam Chen" },
+    matchScore: "low",
+    views: 81,
+    helpfulRate: 68,
+    linkedTickets: 4,
+    matchReasons: ["push notification", "mobile", "alerts", "quiet hours"],
+    quickPath: "Profile > Notifications > Mobile push",
+    media: [sharedPreviewImage],
+    sections: [
+      {
+        title: "Device permission",
+        body: "Confirm notifications are allowed at the operating system level. If permission is denied, workspace settings cannot deliver push alerts.",
+      },
+      {
+        title: "Workspace rules",
+        body: "Check whether the customer muted the relevant queue, ticket type, or account segment. Push settings can differ from email notifications.",
+      },
+      {
+        title: "Quiet hours",
+        body: "Quiet hours suppress non-urgent notifications until the configured window ends. Priority alerts may still appear depending on workspace policy.",
+      },
+      {
+        title: "Re-register the device",
+        body: "Signing out and back into the mobile app refreshes the device token. Use this after permission and workspace settings are confirmed.",
+      },
+      {
+        title: "Escalation details",
+        body: "Collect device OS, app version, affected notification type, expected timestamp, and whether email or in-app notifications arrived.",
+      },
+    ],
+    customerReply:
+      "Please confirm mobile notifications are allowed on your device, then check Profile > Notifications > Mobile push for muted queues or quiet-hours settings.",
+  },
+  {
+    id: "kb-oauth-token-expired",
+    title: "OAuth token expired for integration",
+    summary:
+      "Help customers reconnect integrations when refresh tokens expire, scopes change, or an admin revokes access at the provider.",
+    category: "technical",
+    status: "published",
+    updatedAt: "Updated 3 days ago",
+    author: { name: "Jerome Bell" },
+    matchScore: "high",
+    views: 244,
+    helpfulRate: 85,
+    linkedTickets: 17,
+    matchReasons: ["oauth", "token expired", "integration", "reconnect"],
+    quickPath: "Settings > Integrations > Connected apps",
+    media: [sharedPreviewImage],
+    sections: [
+      {
+        title: "Symptoms",
+        body: "Expired tokens usually show as sync paused, authorization_required, or repeated 401 responses in integration logs.",
+      },
+      {
+        title: "Reconnect the app",
+        body: "An integration admin should open Connected apps, choose Reconnect, and complete provider authorization with the account that owns the integration.",
+      },
+      {
+        title: "Scope changes",
+        body: "If the provider changed required scopes, the reconnect prompt may request additional permission. The customer must approve the new scope set for sync to resume.",
+      },
+      {
+        title: "Provider-side revocation",
+        body: "If the token was revoked from the provider admin console, reconnecting inside the product is required. Retrying sync alone will not refresh access.",
+      },
+      {
+        title: "After reconnecting",
+        body: "Run a manual sync and check integration logs for the next successful event before closing the ticket.",
+      },
+    ],
+    customerReply:
+      "An integration admin can reconnect the app from Settings > Integrations > Connected apps. After reconnecting, run a manual sync to confirm events resume.",
+  },
+  {
+    id: "kb-api-key-rotation",
+    title: "Rotate API keys safely",
+    summary:
+      "Guide customers through creating a replacement key, updating services, and retiring old API keys without downtime.",
+    category: "technical",
+    status: "published",
+    updatedAt: "Updated 4 days ago",
+    author: { name: "Priya Desai" },
+    matchScore: "medium",
+    views: 177,
+    helpfulRate: 80,
+    linkedTickets: 10,
+    matchReasons: ["api key", "rotation", "secret", "developer"],
+    quickPath: "Developer settings > API keys",
+    media: [sharedPreviewImage],
+    sections: [
+      {
+        title: "Create before revoking",
+        body: "Create a new key first and store it in the customer's secret manager. Revoking the old key before deployment can break production traffic.",
+      },
+      {
+        title: "Update services",
+        body: "Replace the key in all services, background workers, scheduled jobs, and local deployment secrets. Some customers forget non-production environments.",
+      },
+      {
+        title: "Verify traffic",
+        body: "Check API logs for successful requests using the new key before deleting the old key. Look for the integration name or key label.",
+      },
+      {
+        title: "Retire the old key",
+        body: "After traffic is confirmed, revoke the old key and monitor for 401 errors from forgotten services.",
+      },
+      {
+        title: "Incident rotation",
+        body: "If the key may be compromised, recommend immediate revocation and incident escalation instead of a gradual rotation.",
+      },
+    ],
+    customerReply:
+      "Create a new API key, update every service that uses it, confirm successful requests in API logs, then revoke the old key.",
+  },
+  {
+    id: "kb-webhook-retry-policy",
+    title: "Webhook retry policy",
+    summary:
+      "Explain retry schedules, idempotency expectations, and how customers can replay failed webhook deliveries.",
+    category: "technical",
+    status: "published",
+    updatedAt: "Updated 6 days ago",
+    author: { name: "Jerome Bell" },
+    matchScore: "medium",
+    views: 152,
+    helpfulRate: 78,
+    linkedTickets: 8,
+    matchReasons: ["webhook", "retry", "delivery", "replay"],
+    quickPath: "Developer settings > Webhooks > Delivery logs",
+    media: [sharedPreviewImage],
+    sections: [
+      {
+        title: "Automatic retries",
+        body: "Failed webhook deliveries are retried with backoff when the endpoint returns a retryable status or times out.",
+      },
+      {
+        title: "Non-retryable failures",
+        body: "Permanent 4xx responses usually stop automatic retries because they indicate endpoint configuration or authorization problems.",
+      },
+      {
+        title: "Replay delivery",
+        body: "Customers can replay a failed delivery from Delivery logs after fixing the endpoint. Replay sends the original payload again.",
+      },
+      {
+        title: "Idempotency requirement",
+        body: "Consumers should handle duplicate events safely. A successful retry or replay may deliver an event the endpoint partially processed earlier.",
+      },
+      {
+        title: "Escalation packet",
+        body: "Collect endpoint URL, delivery ID, response status, response body, and timestamp before escalating.",
+      },
+    ],
+    customerReply:
+      "After fixing the endpoint, you can replay failed webhook deliveries from Delivery logs. Make sure your handler safely accepts duplicate events.",
+  },
+  {
+    id: "kb-zapier-connection-stale",
+    title: "Zapier connection stopped syncing",
+    summary:
+      "Help customers refresh a stale Zapier connection, verify trigger setup, and avoid duplicate automation events after reconnecting.",
+    category: "technical",
+    status: "draft",
+    updatedAt: "Updated 9 days ago",
+    author: { name: "Amina Rahman" },
+    matchScore: "low",
+    views: 67,
+    helpfulRate: 66,
+    linkedTickets: 3,
+    matchReasons: ["zapier", "sync", "automation", "connection"],
+    quickPath: "Settings > Integrations > Zapier",
+    media: [sharedPreviewImage],
+    sections: [
+      {
+        title: "Check Zap history",
+        body: "Ask the customer to review Zap history first. Task failures reveal whether the issue is authentication, field mapping, or a downstream app error.",
+      },
+      {
+        title: "Reconnect account",
+        body: "Reconnect the app account in Zapier, then refresh the connection inside product integration settings if the workspace still shows stale authorization.",
+      },
+      {
+        title: "Trigger changes",
+        body: "If the customer changed queue, segment, or event filters, Zapier may need the trigger sample refreshed before new events match.",
+      },
+      {
+        title: "Duplicate event caution",
+        body: "Replaying failed tasks can create duplicate downstream records if the Zap does not use an idempotent identifier.",
+      },
+      {
+        title: "When to escalate",
+        body: "Escalate when product integration logs show successful delivery but Zapier task history never receives the event.",
+      },
+    ],
+    customerReply:
+      "Please check Zap history, reconnect the app account, and refresh the trigger sample. Be careful replaying tasks if the Zap can create duplicate records.",
+  },
+  {
     id: "kb-audit-log-access",
     title: "View audit log and admin activity",
     summary:
@@ -1306,6 +2286,170 @@ export const knowledgeArticles: KnowledgeArticle[] = withKnowledgeArticleDiscuss
     customerReply:
       "Workspace owners and eligible admins can review this from Admin Center > Security > Audit log.",
   },
+  {
+    id: "kb-remove-member-deactivate",
+    title: "Remove or deactivate a member",
+    summary:
+      "Explain the difference between removing a user, deactivating access, preserving ownership, and freeing a paid seat.",
+    category: "subscription",
+    status: "published",
+    updatedAt: "Updated 2 days ago",
+    author: { name: "Liam Chen" },
+    matchScore: "high",
+    views: 205,
+    helpfulRate: 83,
+    linkedTickets: 14,
+    matchReasons: ["remove member", "deactivate", "seat", "user"],
+    quickPath: "Admin Center > Members > Member profile",
+    media: [sharedPreviewImage],
+    sections: [
+      {
+        title: "Remove versus deactivate",
+        body: "Removing a member fully revokes workspace access. Deactivation keeps the account record available for audit history while blocking sign-in.",
+      },
+      {
+        title: "Before removing",
+        body: "Transfer owned automations, saved views, API tokens, and billing responsibilities before removing the user. Some owned resources may pause when the owner loses access.",
+      },
+      {
+        title: "Seat impact",
+        body: "Removing or deactivating a paid member frees a seat only after the billing system syncs the member count. The subscription does not automatically downgrade.",
+      },
+      {
+        title: "Audit history",
+        body: "Past actions remain attributed to the removed user. Do not suggest deleting audit history to hide former user activity.",
+      },
+      {
+        title: "Reactivation",
+        body: "A deactivated member can be reactivated by an eligible admin. Removed users need a new invitation.",
+      },
+    ],
+    customerReply:
+      "An admin can remove or deactivate a user from Admin Center > Members. Transfer owned resources first so automations, tokens, and billing responsibilities keep working.",
+  },
+  {
+    id: "kb-merge-workspaces",
+    title: "Merge duplicate workspaces",
+    summary:
+      "Set expectations for duplicate workspace cleanup, data export options, member migration, and limits of automated merging.",
+    category: "subscription",
+    status: "needs-review",
+    updatedAt: "Updated 4 days ago",
+    author: { name: "Santi Cazorla" },
+    matchScore: "medium",
+    views: 126,
+    helpfulRate: 72,
+    linkedTickets: 6,
+    matchReasons: ["merge workspace", "duplicate workspace", "migration", "members"],
+    quickPath: "Admin Center > Workspace settings",
+    media: [sharedPreviewImage],
+    sections: [
+      {
+        title: "Merge limitations",
+        body: "Workspaces cannot always be merged automatically because tickets, audit logs, integrations, billing records, and ownership metadata may conflict.",
+      },
+      {
+        title: "Recommended path",
+        body: "Choose the destination workspace, export needed records from the duplicate workspace, invite members to the destination, and disable new activity in the duplicate workspace.",
+      },
+      {
+        title: "Billing coordination",
+        body: "If both workspaces are paid, Billing Operations must review plan, invoice, and credit treatment before cancellation or consolidation.",
+      },
+      {
+        title: "Integration review",
+        body: "Move integrations carefully. API keys, webhook endpoints, and OAuth connections are workspace-specific and usually need to be recreated.",
+      },
+      {
+        title: "Escalation criteria",
+        body: "Escalate when the customer requests backend data migration, ownership conflict resolution, or invoice consolidation across workspaces.",
+      },
+    ],
+    customerReply:
+      "Most duplicate workspace cleanup is handled by choosing a destination workspace, exporting needed data, inviting members, and coordinating billing before closing the duplicate workspace.",
+  },
+  {
+    id: "kb-export-audit-log",
+    title: "Export audit log for compliance",
+    summary:
+      "Guide eligible admins through filtering, exporting, and securely sharing audit history for compliance review.",
+    category: "subscription",
+    status: "published",
+    updatedAt: "Updated 5 days ago",
+    author: { name: "Priya Desai" },
+    matchScore: "medium",
+    views: 154,
+    helpfulRate: 81,
+    linkedTickets: 8,
+    matchReasons: ["audit export", "compliance", "security", "admin activity"],
+    quickPath: "Admin Center > Security > Audit log > Export",
+    media: [sharedPreviewImage],
+    sections: [
+      {
+        title: "Who can export",
+        body: "Only workspace owners and admins with security permissions can export audit logs. Regular admins may be able to view but not export depending on policy.",
+      },
+      {
+        title: "Filter before export",
+        body: "Use date range, actor, event type, and resource filters to reduce export size and make compliance review easier.",
+      },
+      {
+        title: "Export format",
+        body: "Exports include timestamp, actor, event type, affected resource, and metadata when available. Sensitive payload fields may be redacted.",
+      },
+      {
+        title: "Secure handling",
+        body: "Audit exports can contain security-sensitive activity. Recommend sharing through the customer's approved secure file process, not email attachments.",
+      },
+      {
+        title: "Large export behavior",
+        body: "Large date ranges may create a background job. The admin receives an in-app notification when the export is ready.",
+      },
+    ],
+    customerReply:
+      "Eligible admins can filter and export audit history from Admin Center > Security > Audit log. For large ranges, the export may run as a background job.",
+  },
+  {
+    id: "kb-manage-notification-preferences",
+    title: "Manage notification preferences",
+    summary:
+      "Help users tune email, in-app, and mobile notifications without missing important queue, account, or assignment updates.",
+    category: "subscription",
+    status: "published",
+    updatedAt: "Updated 1 week ago",
+    author: { name: "Amina Rahman" },
+    matchScore: "low",
+    views: 118,
+    helpfulRate: 74,
+    linkedTickets: 5,
+    matchReasons: ["notification", "email", "in-app", "preferences"],
+    quickPath: "Profile > Notifications",
+    media: [sharedPreviewImage],
+    sections: [
+      {
+        title: "Notification channels",
+        body: "Users can manage email, in-app, and mobile push preferences separately. Turning off email does not mute in-app notifications.",
+      },
+      {
+        title: "Event categories",
+        body: "Preferences can differ for assignments, mentions, account health changes, automation alerts, and queue activity.",
+      },
+      {
+        title: "Workspace defaults",
+        body: "Admins may enforce required notifications for security or billing events. Required notifications cannot be muted by individual users.",
+      },
+      {
+        title: "Quiet hours",
+        body: "Quiet hours suppress selected notifications during a configured window. Critical alerts may still be delivered depending on workspace policy.",
+      },
+      {
+        title: "Troubleshooting missing alerts",
+        body: "Check channel preferences, muted queues, browser permission, mobile permission, and whether the user is assigned to the account or ticket.",
+      },
+    ],
+    customerReply:
+      "You can tune email, in-app, and mobile notifications from Profile > Notifications. Some required workspace alerts may stay enabled by admin policy.",
+  },
 ])
 
 const categoryFallbackOrder = [
@@ -1322,9 +2466,21 @@ export const knowledgeArticleExplorerGroups: KnowledgeArticleExplorerGroup[] = [
     defaultOpen: true,
     articleIds: [
       "kb-billing-seat-update",
+      "kb-update-payment-method",
       "kb-change-plan-annual-monthly",
+      "kb-cancel-subscription-at-renewal",
       "kb-download-invoice-pdf",
       "kb-card-charge-failed",
+      "kb-invoice-recipient-update",
+      "kb-usage-overage-explained",
+      "kb-billing-address-tax-id",
+      "kb-purchase-order-number",
+      "kb-refund-credit-request",
+      "kb-reseller-billing-managed-account",
+      "kb-renewal-date-change",
+      "kb-upgrade-plan-midcycle",
+      "kb-downgrade-plan-limitations",
+      "kb-billing-owner-transfer",
     ],
   },
   {
@@ -1334,9 +2490,13 @@ export const knowledgeArticleExplorerGroups: KnowledgeArticleExplorerGroup[] = [
     defaultOpen: true,
     articleIds: [
       "kb-login-reset",
+      "kb-sso-login-failed",
       "kb-2fa-recovery-codes",
+      "kb-invite-expired",
+      "kb-role-permission-denied",
       "kb-login-magic-link-expired",
       "kb-browser-cache-login-fix",
+      "kb-session-timeout-policy",
     ],
   },
   {
@@ -1348,6 +2508,10 @@ export const knowledgeArticleExplorerGroups: KnowledgeArticleExplorerGroup[] = [
       "kb-cancel-order",
       "kb-product-exchange",
       "kb-export-failed-timeout",
+      "kb-email-not-delivered",
+      "kb-import-csv-validation",
+      "kb-report-loading-slow",
+      "kb-mobile-push-notifications",
     ],
   },
   {
@@ -1356,8 +2520,12 @@ export const knowledgeArticleExplorerGroups: KnowledgeArticleExplorerGroup[] = [
     icon: "plug",
     articleIds: [
       "kb-api-rate-limit",
+      "kb-oauth-token-expired",
       "kb-webhook-signature-failed",
+      "kb-api-key-rotation",
+      "kb-webhook-retry-policy",
       "kb-domain-verification-stuck",
+      "kb-zapier-connection-stale",
     ],
   },
   {
@@ -1367,6 +2535,10 @@ export const knowledgeArticleExplorerGroups: KnowledgeArticleExplorerGroup[] = [
     articleIds: [
       "kb-transfer-workspace-ownership",
       "kb-audit-log-access",
+      "kb-remove-member-deactivate",
+      "kb-merge-workspaces",
+      "kb-export-audit-log",
+      "kb-manage-notification-preferences",
     ],
   },
 ]

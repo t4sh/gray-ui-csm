@@ -4,11 +4,13 @@ import {
 } from "@/lib/knowledge-base/mock-data"
 import type {
   KnowledgeArticle,
+  KnowledgeArticleExplorerGroup,
   KnowledgeBaseStorageSnapshot,
 } from "@/lib/knowledge-base/types"
 
 const STORAGE_KEY = "gray-ui-csm:knowledge-base"
 const LEGACY_ARTICLES_KEY = "gray-ui-csm:knowledge-base-articles"
+const KNOWLEDGE_BASE_SEED_REVISION = 2
 
 export const KNOWLEDGE_BASE_STORAGE_UPDATED_EVENT =
   "gray-ui-csm:knowledge-base-updated"
@@ -16,6 +18,7 @@ export const KNOWLEDGE_BASE_STORAGE_UPDATED_EVENT =
 export function getDefaultKnowledgeBaseSnapshot(): KnowledgeBaseStorageSnapshot {
   return {
     version: 1,
+    seedRevision: KNOWLEDGE_BASE_SEED_REVISION,
     articles: knowledgeArticles,
     groups: knowledgeArticleExplorerGroups,
   }
@@ -77,6 +80,97 @@ function mergeArticleDefaults(
   })
 }
 
+function mergeArticleUserState(
+  article: KnowledgeArticle,
+  existingArticle?: KnowledgeArticle
+): KnowledgeArticle {
+  if (!existingArticle) return article
+
+  const comments = existingArticle.comments ?? article.comments
+  const activity = existingArticle.activity ?? article.activity
+
+  return {
+    ...article,
+    isPinned: existingArticle.isPinned ?? article.isPinned,
+    archivedAt: existingArticle.archivedAt ?? article.archivedAt,
+    comments,
+    commentsCount:
+      comments?.length ?? article.commentsCount ?? existingArticle.commentsCount,
+    activity,
+    activityCount:
+      activity?.length ?? article.activityCount ?? existingArticle.activityCount,
+  }
+}
+
+function mergeGroupUserState(
+  group: KnowledgeArticleExplorerGroup,
+  existingGroup: KnowledgeArticleExplorerGroup | undefined,
+  seedArticleIds: Set<string>
+): KnowledgeArticleExplorerGroup {
+  if (!existingGroup) return group
+
+  const customArticleIds = existingGroup.articleIds.filter(
+    (articleId) => !seedArticleIds.has(articleId)
+  )
+
+  return {
+    ...group,
+    defaultOpen: existingGroup.defaultOpen ?? group.defaultOpen,
+    articleIds: Array.from(new Set([...group.articleIds, ...customArticleIds])),
+  }
+}
+
+function mergeKnowledgeBaseSnapshot(
+  snapshot: KnowledgeBaseStorageSnapshot,
+  fallback: KnowledgeBaseStorageSnapshot
+): KnowledgeBaseStorageSnapshot {
+  const shouldRefreshSeedContent =
+    snapshot.seedRevision !== KNOWLEDGE_BASE_SEED_REVISION
+  const fallbackArticleIds = new Set(
+    fallback.articles.map((article) => article.id)
+  )
+  const existingArticleById = new Map(
+    snapshot.articles.map((article) => [article.id, article])
+  )
+  const existingGroupById = new Map(
+    snapshot.groups.map((group) => [group.id, group])
+  )
+
+  const seedArticles = fallback.articles.map((fallbackArticle) => {
+    const existingArticle = existingArticleById.get(fallbackArticle.id)
+
+    if (shouldRefreshSeedContent) {
+      return mergeArticleUserState(fallbackArticle, existingArticle)
+    }
+
+    return mergeArticleDefaults(
+      [existingArticle ?? fallbackArticle],
+      fallback.articles
+    )[0]
+  })
+  const customArticles = snapshot.articles.filter(
+    (article) => !fallbackArticleIds.has(article.id)
+  )
+  const seedGroups = fallback.groups.map((fallbackGroup) =>
+    mergeGroupUserState(
+      fallbackGroup,
+      existingGroupById.get(fallbackGroup.id),
+      fallbackArticleIds
+    )
+  )
+  const customGroups = snapshot.groups.filter(
+    (group) =>
+      !fallback.groups.some((fallbackGroup) => fallbackGroup.id === group.id)
+  )
+
+  return {
+    version: 1,
+    seedRevision: KNOWLEDGE_BASE_SEED_REVISION,
+    articles: [...seedArticles, ...customArticles],
+    groups: [...seedGroups, ...customGroups],
+  }
+}
+
 function migrateLegacyArticleStorage(
   articles: KnowledgeArticle[],
   fallbackGroups: KnowledgeBaseStorageSnapshot["groups"]
@@ -98,10 +192,7 @@ export function loadKnowledgeBaseSnapshot(
     if (rawSnapshot) {
       const parsed = JSON.parse(rawSnapshot) as unknown
       if (isKnowledgeBaseStorageSnapshot(parsed)) {
-        return {
-          ...parsed,
-          articles: mergeArticleDefaults(parsed.articles, fallback.articles),
-        }
+        return mergeKnowledgeBaseSnapshot(parsed, fallback)
       }
     }
 
@@ -113,14 +204,15 @@ export function loadKnowledgeBaseSnapshot(
           mergeArticleDefaults(parsedLegacy, fallback.articles),
           fallback.groups
         )
+        const merged = mergeKnowledgeBaseSnapshot(migrated, fallback)
         try {
-          window.localStorage.setItem(STORAGE_KEY, JSON.stringify(migrated))
+          window.localStorage.setItem(STORAGE_KEY, JSON.stringify(merged))
           window.localStorage.removeItem(LEGACY_ARTICLES_KEY)
           notifyKnowledgeBaseStorageUpdated()
         } catch {
           // Ignore quota and serialization errors for local prototype persistence.
         }
-        return migrated
+        return merged
       }
     }
   } catch {

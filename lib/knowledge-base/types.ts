@@ -52,6 +52,7 @@ export type KnowledgeArticleActivity = {
 
 export type KnowledgeBaseStorageSnapshot = {
   version: 1
+  seedRevision?: number
   articles: KnowledgeArticle[]
   groups: KnowledgeArticleExplorerGroup[]
 }
