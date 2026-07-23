@@ -1,15 +1,17 @@
-import { getNextTicketSequence, sortTicketsByBoardOrder } from "@/components/tickets/tickets-page-helpers"
-import type {
-  Ticket,
-  TicketQueueStatus,
-  TicketSubmitAction,
-} from "@/lib/tickets/types"
+import {
+  getNextTicketSequence,
+  sortTicketsByBoardOrder,
+} from "@/components/tickets/tickets-page-helpers"
+import type { Ticket, TicketQueueStatus } from "@/lib/tickets/types"
+export { getQueueStatusAfterSubmit } from "@/lib/tickets/mutations"
 
 export function mergeVisibleTicketUpdates(
   sourceTickets: Ticket[],
   nextVisibleTickets: Ticket[]
 ) {
-  const updates = new Map(nextVisibleTickets.map((ticket) => [ticket.id, ticket] as const))
+  const updates = new Map(
+    nextVisibleTickets.map((ticket) => [ticket.id, ticket] as const)
+  )
 
   return sourceTickets.map((ticket) => updates.get(ticket.id) ?? ticket)
 }
@@ -137,15 +139,6 @@ export function createSubmittedTicket(
     },
     ...sourceTickets,
   ]
-}
-
-export function getQueueStatusAfterSubmit(
-  currentStatus: TicketQueueStatus,
-  action: TicketSubmitAction
-): TicketQueueStatus {
-  if (action === "resolved") return "resolved"
-  if (action === "pending") return "pending"
-  return currentStatus === "open" ? "pending" : currentStatus
 }
 
 export function omitRecordKey<TValue>(

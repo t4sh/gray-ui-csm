@@ -17,7 +17,6 @@ import {
   IconPlus,
   IconSearch,
   IconSend,
-  IconTag,
   IconTicket,
   IconX,
 } from "@tabler/icons-react"
@@ -44,7 +43,15 @@ import {
   SelectItem,
   SelectTrigger,
 } from "@/components/ui/select"
-import { Sheet, SheetContent, SheetTitle } from "@/components/ui/sheet"
+import { SheetTitle } from "@/components/ui/sheet"
+import {
+  noAssigneeValue,
+  normalizePriority,
+  priorityOptions,
+  ticketTypeOptions,
+} from "@/components/tickets/ticket-field-options"
+import { TicketDrawerSurface } from "@/components/tickets/ticket-drawer-surface"
+import { TicketTagsEditor } from "@/components/tickets/ticket-tags-editor"
 import { currentUser, replyFromAccounts } from "@/lib/current-user"
 import { getTicketInitials } from "@/lib/tickets/presentation"
 import type {
@@ -52,7 +59,6 @@ import type {
   TicketAssignee,
   TicketDrawerOrigin,
   TicketPerson,
-  TicketPriority,
   TicketSubmitAction,
   TicketType,
 } from "@/lib/tickets/types"
@@ -86,23 +92,6 @@ const templateOptions = [
   "Thank you for using the app.",
 ]
 
-const ticketTypeOptions: Array<{ value: TicketType; label: string }> = [
-  { value: "incident", label: "Incident" },
-  { value: "question", label: "Question" },
-  { value: "task", label: "Task" },
-  { value: "problem", label: "Problem" },
-]
-
-const priorityOptions: Array<{
-  value: TicketPriority
-  label: string
-  dotClassName: string
-}> = [
-  { value: "low", label: "Low", dotClassName: "bg-primary" },
-  { value: "medium", label: "Medium", dotClassName: "bg-chart-3" },
-  { value: "high", label: "High", dotClassName: "bg-destructive" },
-]
-
 const replyActionOptions: Array<{
   action: TicketSubmitAction
   label: string
@@ -129,57 +118,7 @@ const replyActionOptions: Array<{
   },
 ]
 
-const noAssigneeValue = "__unassigned__"
 const noRequesterValue = "__no-requester__"
-const DRAWER_MOTION = {
-  enterYOffsetLimit: 14,
-  exitYOffsetLimit: 8,
-  yOffsetDivider: 20,
-  exitOffsetRatio: 0.4,
-  enterSlideWidthRatio: 0.35,
-  enterSlideMin: 44,
-  enterSlideMax: 72,
-  exitSlidePx: 40,
-} as const
-
-function clamp(value: number, min: number, max: number) {
-  return Math.min(max, Math.max(min, value))
-}
-
-function normalizePriority(priority: TicketPriority) {
-  if (priority === "urgent") return "high"
-  if (priority === "todo") return "low"
-  return priority
-}
-
-function getDrawerMotionStyle(origin?: TicketDrawerOrigin | null) {
-  if (!origin || typeof window === "undefined") return undefined
-
-  const centerY = origin.y + origin.height / 2
-  const viewportCenterY = window.innerHeight / 2
-  const shiftY = clamp(
-    (centerY - viewportCenterY) / DRAWER_MOTION.yOffsetDivider,
-    -DRAWER_MOTION.enterYOffsetLimit,
-    DRAWER_MOTION.enterYOffsetLimit
-  )
-  const exitShiftY = clamp(
-    shiftY * DRAWER_MOTION.exitOffsetRatio,
-    -DRAWER_MOTION.exitYOffsetLimit,
-    DRAWER_MOTION.exitYOffsetLimit
-  )
-  const enterSlide = clamp(
-    origin.width * DRAWER_MOTION.enterSlideWidthRatio,
-    DRAWER_MOTION.enterSlideMin,
-    DRAWER_MOTION.enterSlideMax
-  )
-
-  return {
-    "--drawer-slide-enter-x": `${enterSlide.toFixed(1)}px`,
-    "--drawer-slide-exit-x": `${DRAWER_MOTION.exitSlidePx}px`,
-    "--drawer-origin-enter-y": `${shiftY.toFixed(1)}px`,
-    "--drawer-origin-exit-y": `${exitShiftY.toFixed(1)}px`,
-  } as React.CSSProperties
-}
 
 function MetadataField({
   label,
@@ -331,17 +270,16 @@ export function TicketDrawer({ open, ticket, ...props }: TicketDrawerProps) {
     : false
 
   return (
-    <Sheet open={open} onOpenChange={props.onOpenChange}>
-      <SheetContent
-        side="right"
-        showCloseButton={false}
-        style={getDrawerMotionStyle(panelState?.origin)}
-        className={cn(
-          "overflow-hidden p-0 transition-[width,transform] duration-300 ease-[var(--motion-emphasized)] will-change-[width,transform] data-ending-style:translate-x-[var(--drawer-slide-exit-x,2.5rem)] data-ending-style:translate-y-[var(--drawer-origin-exit-y,0px)] data-starting-style:translate-x-[var(--drawer-slide-enter-x,3rem)] data-starting-style:translate-y-[var(--drawer-origin-enter-y,0px)] data-[side=right]:top-0 data-[side=right]:right-0 data-[side=right]:bottom-0 data-[side=right]:h-dvh data-[side=right]:w-screen data-[side=right]:rounded-none data-[side=right]:border-l data-[side=right]:border-border/70 motion-reduce:transition-none sm:shadow-2xl sm:data-[side=right]:top-3 sm:data-[side=right]:right-3 sm:data-[side=right]:bottom-3 sm:data-[side=right]:h-[calc(100dvh-1.5rem)] sm:data-[side=right]:w-[min(calc(100vw-1.5rem),clamp(34rem,36vw,46rem))] sm:data-[side=right]:max-w-none sm:data-[side=right]:rounded-[22px] sm:data-[side=right]:border",
-          renderedIsExpanded &&
-            "lg:data-[side=right]:w-[min(calc(100vw-2rem),clamp(60rem,72vw,78rem))]"
-        )}
-      >
+    <TicketDrawerSurface
+      open={open}
+      origin={panelState?.origin}
+      onOpenChange={props.onOpenChange}
+      className={cn(
+        "sm:data-[side=right]:w-[min(calc(100vw-1.5rem),clamp(34rem,36vw,46rem))]",
+        renderedIsExpanded &&
+          "lg:data-[side=right]:w-[min(calc(100vw-2rem),clamp(60rem,72vw,78rem))]"
+      )}
+    >
         {panelState ? (
           <TicketDrawerPanel
             {...props}
@@ -361,8 +299,7 @@ export function TicketDrawer({ open, ticket, ...props }: TicketDrawerProps) {
             }
           />
         ) : null}
-      </SheetContent>
-    </Sheet>
+    </TicketDrawerSurface>
   )
 }
 
@@ -387,10 +324,7 @@ function TicketDrawerPanel({
 }) {
   const router = useRouter()
   const composerRef = useRef<HTMLTextAreaElement>(null)
-  const tagInputRef = useRef<HTMLInputElement>(null)
   const [templateQuery, setTemplateQuery] = useState("")
-  const [tagInputValue, setTagInputValue] = useState("")
-  const [isTagComposerOpen, setIsTagComposerOpen] = useState(false)
 
   const updateTicket = (updater: (currentTicket: Ticket) => Ticket) => {
     onUpdateTicket(ticket.id, updater)
@@ -446,21 +380,6 @@ function TicketDrawerPanel({
   const filteredTemplates = templateOptions.filter((template) =>
     template.toLowerCase().includes(templateQuery.trim().toLowerCase())
   )
-
-  const commitTagInput = () => {
-    const nextTag = tagInputValue.trim()
-    if (!nextTag || tags.includes(nextTag)) {
-      setIsTagComposerOpen(false)
-      return
-    }
-
-    updateTicket((currentTicket) => ({
-      ...currentTicket,
-      tags: [...(currentTicket.tags ?? []), nextTag],
-    }))
-    setTagInputValue("")
-    setIsTagComposerOpen(false)
-  }
 
   const insertComposerSnippet = ({
     before = "",
@@ -534,14 +453,6 @@ function TicketDrawerPanel({
     window.addEventListener("keydown", handleKeyDown)
     return () => window.removeEventListener("keydown", handleKeyDown)
   }, [mode, onSubmitMessage, primaryActionDisabled, ticket.id])
-
-  useEffect(() => {
-    if (!isTagComposerOpen) return
-
-    requestAnimationFrame(() => {
-      tagInputRef.current?.focus()
-    })
-  }, [isTagComposerOpen])
 
   return (
     <div className="flex h-full flex-col overflow-hidden bg-background transition-[background-color] duration-300 motion-reduce:transition-none">
@@ -624,7 +535,7 @@ function TicketDrawerPanel({
                   >
                     Clear tags and followers
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => router.push("/accounts")}>
+                  <DropdownMenuItem onClick={() => router.push("/customers")}>
                     Manage accounts
                   </DropdownMenuItem>
                   <DropdownMenuItem
@@ -737,7 +648,7 @@ function TicketDrawerPanel({
                       <DropdownMenuGroup>
                         <DropdownMenuItem
                           className="rounded-xl px-2 text-sm underline-offset-2 hover:underline"
-                          onClick={() => router.push("/accounts")}
+                          onClick={() => router.push("/customers")}
                         >
                           Add account
                         </DropdownMenuItem>
@@ -1118,79 +1029,16 @@ function TicketDrawerPanel({
                 </MetadataField>
               </div>
 
-              <div className="border-b border-border/70 py-3">
-                <div className="mb-2 flex items-center justify-between gap-3">
-                  <div className="inline-flex items-center gap-1.5 text-sm font-medium">
-                    <span>Tags</span>
-                    <span className="text-muted-foreground">
-                      {tags.length > 0 ? `All (${tags.length})` : ""}
-                    </span>
-                  </div>
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="icon-sm"
-                    className="rounded-md text-muted-foreground"
-                    aria-label="Add tag"
-                    onClick={() => setIsTagComposerOpen((current) => !current)}
-                  >
-                    <IconPlus className="size-4" />
-                  </Button>
-                </div>
-
-                {tags.length > 0 ? (
-                  <div className="flex flex-wrap gap-2">
-                    {tags.map((tag) => (
-                      <TokenPill
-                        key={tag}
-                        label={tag}
-                        leading={
-                          <IconTag className="size-3.5 text-muted-foreground" />
-                        }
-                        className="rounded-md border border-border bg-muted/70 px-2 py-1 text-sm font-normal"
-                        onRemove={() =>
-                          updateTicket((currentTicket) => ({
-                            ...currentTicket,
-                            tags: (currentTicket.tags ?? []).filter(
-                              (currentTag) => currentTag !== tag
-                            ),
-                          }))
-                        }
-                      />
-                    ))}
-                  </div>
-                ) : (
-                  <div className="text-sm text-muted-foreground">
-                    No tags yet
-                  </div>
-                )}
-
-                {isTagComposerOpen ? (
-                  <div className="mt-3 flex items-center gap-2 rounded-lg border border-border/70 bg-background px-2.5 py-2">
-                    <IconTag className="size-4 text-muted-foreground" />
-                    <input
-                      ref={tagInputRef}
-                      value={tagInputValue}
-                      onChange={(event) => setTagInputValue(event.target.value)}
-                      onKeyDown={(event) => {
-                        if (event.key === "Enter" || event.key === ",") {
-                          event.preventDefault()
-                          commitTagInput()
-                        }
-
-                        if (event.key === "Escape") {
-                          event.preventDefault()
-                          setIsTagComposerOpen(false)
-                          setTagInputValue("")
-                        }
-                      }}
-                      onBlur={commitTagInput}
-                      placeholder="Add tag"
-                      className="flex-1 bg-transparent text-sm outline-none placeholder:text-muted-foreground"
-                    />
-                  </div>
-                ) : null}
-              </div>
+              <TicketTagsEditor
+                tags={tags}
+                onTagsChange={(nextTags) =>
+                  updateTicket((currentTicket) => ({
+                    ...currentTicket,
+                    tags: nextTags,
+                  }))
+                }
+                className="border-b border-border/70"
+              />
 
               <div className="border-b border-border/70 py-3">
                 <div className="mb-2 flex items-center justify-between gap-3">

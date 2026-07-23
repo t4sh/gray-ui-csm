@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useMemo, useRef, useState } from "react"
+import { useMemo, useState } from "react"
 import { usePathname, useRouter, useSearchParams } from "next/navigation"
 import { arrayMove } from "@dnd-kit/sortable"
 import { IconArrowLeft, IconChevronDown, IconDots } from "@tabler/icons-react"
@@ -25,6 +25,7 @@ import {
 } from "@/components/tickets/ticket-detail-sections"
 import { TicketPriorityIndicator } from "@/components/ticket-priority-indicator"
 import { useTicketReplyFlow } from "@/components/tickets/use-ticket-reply-flow"
+import { useTicketTasks } from "@/components/tickets/use-ticket-tasks"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import {
@@ -50,12 +51,7 @@ import type {
   TicketTimelineEvent,
   TicketTimelineItem,
 } from "@/lib/tickets/detail-data"
-import {
-  createTicketTask,
-  createTicketTaskId,
-  getTicketTaskStorageKey,
-  parsePersistedTicketTasks,
-} from "@/lib/tickets/task-utils"
+import { createTicketTask, createTicketTaskId } from "@/lib/tickets/task-utils"
 import { useIsMobile } from "@/hooks/use-mobile"
 import { cn } from "@/lib/utils"
 
@@ -80,14 +76,12 @@ export function TicketDetailPage({
   const searchParams = useSearchParams()
   const searchTab = searchParams.get("tab")
   const isMobile = useIsMobile()
-  const taskStorageKey = getTicketTaskStorageKey(ticket.id)
-  const didHydrateTasksRef = useRef(false)
 
   const [queueStatus, setQueueStatus] = useState<TicketQueueStatus>(
     ticket.queueStatus
   )
   const [timeline, setTimeline] = useState(detail.timeline)
-  const [tasks, setTasks] = useState<TicketTask[]>(detail.tasks)
+  const { tasks, updateTasks } = useTicketTasks(ticket.id, detail.tasks)
   const [notes, setNotes] = useState(detail.notes)
   const [noteDraft, setNoteDraft] = useState("")
   const [isDesktopRightPanelOpen, setIsDesktopRightPanelOpen] = useState(true)
@@ -143,39 +137,6 @@ export function TicketDetailPage({
     ? (searchTab as TicketDetailTab)
     : initialTab
 
-  useEffect(() => {
-    if (typeof window === "undefined") return
-    didHydrateTasksRef.current = false
-
-    const persistedTasks = parsePersistedTicketTasks(
-      window.localStorage.getItem(taskStorageKey)
-    )
-    const frameId = window.requestAnimationFrame(() => {
-      if (persistedTasks) {
-        setTasks(persistedTasks)
-      } else {
-        setTasks(detail.tasks)
-      }
-
-      didHydrateTasksRef.current = true
-    })
-
-    return () => {
-      window.cancelAnimationFrame(frameId)
-    }
-  }, [detail.tasks, taskStorageKey])
-
-  useEffect(() => {
-    if (!didHydrateTasksRef.current) return
-    if (typeof window === "undefined") return
-
-    try {
-      window.localStorage.setItem(taskStorageKey, JSON.stringify(tasks))
-    } catch {
-      // Ignore persistence failures (private mode, quota, etc.).
-    }
-  }, [taskStorageKey, tasks])
-
   const updateTab = (nextTab: TicketDetailTab) => {
     const nextSearchParams = new URLSearchParams(searchParams.toString())
     nextSearchParams.set("tab", nextTab)
@@ -216,7 +177,7 @@ export function TicketDetailPage({
   }
 
   const handleToggleTask = (taskId: string) => {
-    setTasks((currentTasks) =>
+    updateTasks((currentTasks) =>
       currentTasks.map((currentTask) =>
         currentTask.id === taskId
           ? {
@@ -229,7 +190,7 @@ export function TicketDetailPage({
   }
 
   const handleCreateTask = ({ id, title }: CreateTicketTaskPayload) => {
-    setTasks((currentTasks) => [
+    updateTasks((currentTasks) => [
       createTicketTask({ id, title, assignee: ticket.assignee }),
       ...currentTasks,
     ])
@@ -239,7 +200,7 @@ export function TicketDetailPage({
     taskId: string,
     patch: Partial<Pick<TicketTask, "title" | "status" | "due" | "assignee">>
   ) => {
-    setTasks((currentTasks) =>
+    updateTasks((currentTasks) =>
       currentTasks.map((currentTask) =>
         currentTask.id === taskId ? { ...currentTask, ...patch } : currentTask
       )
@@ -247,7 +208,7 @@ export function TicketDetailPage({
   }
 
   const handleDuplicateTask = (taskId: string) => {
-    setTasks((currentTasks) => {
+    updateTasks((currentTasks) => {
       const index = currentTasks.findIndex(
         (currentTask) => currentTask.id === taskId
       )
@@ -267,13 +228,13 @@ export function TicketDetailPage({
   }
 
   const handleDeleteTask = (taskId: string) => {
-    setTasks((currentTasks) =>
+    updateTasks((currentTasks) =>
       currentTasks.filter((currentTask) => currentTask.id !== taskId)
     )
   }
 
   const handleReorderTasks = (activeTaskId: string, overTaskId: string) => {
-    setTasks((currentTasks) => {
+    updateTasks((currentTasks) => {
       const fromIndex = currentTasks.findIndex(
         (currentTask) => currentTask.id === activeTaskId
       )
@@ -377,19 +338,13 @@ export function TicketDetailPage({
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="min-w-52">
                 <DropdownMenuGroup>
-                  <DropdownMenuItem
-                    onClick={() => submitReply("pending")}
-                  >
+                  <DropdownMenuItem onClick={() => submitReply("pending")}>
                     Submit as Pending
                   </DropdownMenuItem>
-                  <DropdownMenuItem
-                    onClick={() => submitReply("resolved")}
-                  >
+                  <DropdownMenuItem onClick={() => submitReply("resolved")}>
                     Submit as Resolved
                   </DropdownMenuItem>
-                  <DropdownMenuItem
-                    onClick={() => submitReply(undefined)}
-                  >
+                  <DropdownMenuItem onClick={() => submitReply(undefined)}>
                     Send reply only
                   </DropdownMenuItem>
                 </DropdownMenuGroup>
@@ -511,7 +466,7 @@ export function TicketDetailPage({
                 selectedReplyAccount={selectedReplyAccount}
                 replyFrom={replyFrom}
                 onReplyFromChange={setReplyFrom}
-                onManageAccounts={() => router.push("/accounts")}
+                onManageAccounts={() => router.push("/customers")}
                 draftMessage={draftMessage}
                 onDraftMessageChange={setDraftMessage}
                 linkedArticle={draftLinkedArticle}

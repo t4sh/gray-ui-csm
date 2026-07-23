@@ -124,10 +124,7 @@ function KnowledgeArticleLinkCard({
 }) {
   return (
     <div
-      className={cn(
-        "rounded-xl border bg-background p-3 text-left",
-        className
-      )}
+      className={cn("rounded-xl border bg-background p-3 text-left", className)}
     >
       <div className="truncate text-xs font-medium text-primary">
         {article.url}
@@ -226,7 +223,9 @@ export function ConversationTabContent({
 }) {
   const scrollContainerRef = React.useRef<HTMLDivElement | null>(null)
   const bottomAnchorRef = React.useRef<HTMLDivElement | null>(null)
-  const revealTimeoutRef = React.useRef<ReturnType<typeof setTimeout> | null>(null)
+  const revealTimeoutRef = React.useRef<ReturnType<typeof setTimeout> | null>(
+    null
+  )
   const [visiblePendingReply, setVisiblePendingReply] =
     React.useState<typeof pendingReply>(null)
 
@@ -292,209 +291,209 @@ export function ConversationTabContent({
       bottomAnchorRef={bottomAnchorRef}
       composer={
         <DiscussionComposerShell
-        currentUser={currentUser}
-        header={
-          <>
-            <span className="text-muted-foreground">Via</span>
-            <Badge
-              variant="secondary"
-              className="h-8 rounded-full px-3 font-medium"
-            >
-              {channelLabel[ticket.channel]}
-            </Badge>
-            <span className="text-muted-foreground">From</span>
-            <DropdownMenu>
-              <DropdownMenuTrigger
-                render={
-                  <Button
-                    type="button"
-                    variant="secondary"
-                    className="h-8 rounded-full px-3 font-medium"
-                  />
-                }
+          currentUser={currentUser}
+          header={
+            <>
+              <span className="text-muted-foreground">Via</span>
+              <Badge
+                variant="secondary"
+                className="h-8 rounded-full px-3 font-medium"
               >
-                {selectedReplyAccount?.label}
-                <IconChevronDown className="size-4 text-muted-foreground" />
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="start" className="w-72 p-2">
-                <DropdownMenuGroup>
-                  <DropdownMenuLabel className="px-2 pb-3 text-base font-semibold text-foreground">
-                    Select account
-                  </DropdownMenuLabel>
-                  <DropdownMenuRadioGroup
-                    value={replyFrom}
-                    onValueChange={onReplyFromChange}
-                  >
-                    {replyAccounts.map((account) => (
-                      <DropdownMenuRadioItem
-                        key={account.address}
-                        value={account.address}
-                        className="mb-2 rounded-xl border border-border/70 px-3 py-3"
-                      >
-                        <div className="min-w-0">
-                          <div className="truncate font-medium">
-                            {account.label}
-                          </div>
-                          <div className="truncate text-xs text-muted-foreground">
-                            {account.description}
-                          </div>
-                        </div>
-                      </DropdownMenuRadioItem>
-                    ))}
-                  </DropdownMenuRadioGroup>
-                </DropdownMenuGroup>
-                <DropdownMenuSeparator />
-                <DropdownMenuGroup>
-                  <DropdownMenuItem onClick={onManageAccounts}>
-                    Manage accounts
-                  </DropdownMenuItem>
-                </DropdownMenuGroup>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </>
-        }
-      >
-        <textarea
-          value={draftMessage}
-          onChange={(event) => onDraftMessageChange(event.target.value)}
-          placeholder="Comment or type '/' for commands"
-          disabled={isSendingReply}
-          className="min-h-40 w-full resize-none bg-transparent px-4 py-3 text-sm leading-6 text-foreground outline-none placeholder:text-muted-foreground/70"
-        />
-        {linkedArticle ? (
-          <div className="border-t px-4 py-3">
-            <KnowledgeArticleLinkCard
-              article={{
-                title: linkedArticle.title,
-                url: getKnowledgeArticleUrl(linkedArticle),
-                category: getKnowledgeArticleCategoryLabel(linkedArticle),
-                summary: linkedArticle.summary,
-              }}
-            />
-          </div>
-        ) : null}
-
-        <div className="border-t px-3 py-3">
-          <div className="flex flex-wrap items-center justify-between gap-3">
-            <div className="flex flex-wrap items-center gap-2">
-              <Button
-                type="button"
-                variant="ghost"
-                size="icon-sm"
-                className="rounded-lg text-muted-foreground"
-              >
-                <span className="text-base font-medium">T</span>
-              </Button>
-              <Button
-                type="button"
-                variant="ghost"
-                size="icon-sm"
-                className="rounded-lg text-muted-foreground"
-              >
-                <IconMoodSmile className="size-4" />
-              </Button>
-              <Button
-                type="button"
-                variant="ghost"
-                size="icon-sm"
-                className="rounded-lg text-muted-foreground"
-              >
-                <IconPaperclip className="size-4" />
-              </Button>
-              <Button
-                type="button"
-                variant="ghost"
-                size="icon-sm"
-                className="rounded-lg text-muted-foreground"
-              >
-                <IconMicrophone className="size-4" />
-              </Button>
-              <Button
-                type="button"
-                variant="ghost"
-                size="icon-sm"
-                className="rounded-lg text-muted-foreground"
-              >
-                <IconPhoto className="size-4" />
-              </Button>
-
+                {channelLabel[ticket.channel]}
+              </Badge>
+              <span className="text-muted-foreground">From</span>
               <DropdownMenu>
                 <DropdownMenuTrigger
                   render={
                     <Button
                       type="button"
-                      variant="outline"
-                      className="ml-1 h-9 rounded-xl px-3 text-sm font-medium"
+                      variant="secondary"
+                      className="h-8 rounded-full px-3 font-medium"
                     />
                   }
                 >
-                  Macros
+                  {selectedReplyAccount?.label}
                   <IconChevronDown className="size-4 text-muted-foreground" />
                 </DropdownMenuTrigger>
-                <DropdownMenuContent
-                  align="start"
-                  className="w-[19rem] rounded-2xl p-0"
-                >
-                  <div className="border-b border-border/70 px-4 py-3">
-                    <div className="text-sm font-semibold text-foreground">
-                      Add Macros
-                    </div>
-                    <div className="relative mt-3">
-                      <IconSearch className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
-                      <Input
-                        value={templateQuery}
-                        onChange={(event) =>
-                          onTemplateQueryChange(event.target.value)
-                        }
-                        placeholder="Search macros"
-                        disabled={isSendingReply}
-                        className="h-10 rounded-xl border-border/70 pl-9"
-                      />
-                    </div>
-                  </div>
-                  <div className="scrollbar-hidden max-h-72 overflow-y-auto px-2 py-2">
-                    <div className="px-2 py-2 text-xs font-medium text-muted-foreground">
-                      Suggested replies
-                    </div>
-                    {filteredMacros.map((macro) => (
-                      <button
-                        key={macro}
-                        type="button"
-                        className="w-full rounded-xl px-2 py-2 text-left text-sm text-foreground/80 transition hover:bg-muted"
-                        onClick={() => onMacroInsert(macro)}
-                        disabled={isSendingReply}
-                      >
-                        {macro}
-                      </button>
-                    ))}
-                  </div>
+                <DropdownMenuContent align="start" className="w-72 p-2">
+                  <DropdownMenuGroup>
+                    <DropdownMenuLabel className="px-2 pb-3 text-base font-semibold text-foreground">
+                      Select account
+                    </DropdownMenuLabel>
+                    <DropdownMenuRadioGroup
+                      value={replyFrom}
+                      onValueChange={onReplyFromChange}
+                    >
+                      {replyAccounts.map((account) => (
+                        <DropdownMenuRadioItem
+                          key={account.address}
+                          value={account.address}
+                          className="mb-2 rounded-xl border border-border/70 px-3 py-3"
+                        >
+                          <div className="min-w-0">
+                            <div className="truncate font-medium">
+                              {account.label}
+                            </div>
+                            <div className="truncate text-xs text-muted-foreground">
+                              {account.description}
+                            </div>
+                          </div>
+                        </DropdownMenuRadioItem>
+                      ))}
+                    </DropdownMenuRadioGroup>
+                  </DropdownMenuGroup>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuGroup>
+                    <DropdownMenuItem onClick={onManageAccounts}>
+                      Manage accounts
+                    </DropdownMenuItem>
+                  </DropdownMenuGroup>
                 </DropdownMenuContent>
               </DropdownMenu>
+            </>
+          }
+        >
+          <textarea
+            value={draftMessage}
+            onChange={(event) => onDraftMessageChange(event.target.value)}
+            placeholder="Comment or type '/' for commands"
+            disabled={isSendingReply}
+            className="min-h-40 w-full resize-none bg-transparent px-4 py-3 text-sm leading-6 text-foreground outline-none placeholder:text-muted-foreground/70"
+          />
+          {linkedArticle ? (
+            <div className="border-t px-4 py-3">
+              <KnowledgeArticleLinkCard
+                article={{
+                  title: linkedArticle.title,
+                  url: getKnowledgeArticleUrl(linkedArticle),
+                  category: getKnowledgeArticleCategoryLabel(linkedArticle),
+                  summary: linkedArticle.summary,
+                }}
+              />
             </div>
+          ) : null}
 
-            <div className="flex items-center gap-2">
-              <Button
-                type="button"
-                variant="ghost"
-                className="h-9 rounded-xl px-3 text-sm font-medium"
-                onClick={() => onSubmitReply("closed")}
-                disabled={isSendingReply}
-              >
-                {isSendingReply ? "Sending..." : "End Chat"}
-              </Button>
-              <Button
-                type="button"
-                className="h-9 rounded-xl px-4"
-                onClick={() => onSubmitReply()}
-                disabled={!draftMessage.trim() || isSendingReply}
-              >
-                {isSendingReply ? "Sending..." : "Send"}
-                <IconSend className="size-4" />
-              </Button>
+          <div className="border-t px-3 py-3">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <div className="flex flex-wrap items-center gap-2">
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon-sm"
+                  className="rounded-lg text-muted-foreground"
+                >
+                  <span className="text-base font-medium">T</span>
+                </Button>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon-sm"
+                  className="rounded-lg text-muted-foreground"
+                >
+                  <IconMoodSmile className="size-4" />
+                </Button>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon-sm"
+                  className="rounded-lg text-muted-foreground"
+                >
+                  <IconPaperclip className="size-4" />
+                </Button>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon-sm"
+                  className="rounded-lg text-muted-foreground"
+                >
+                  <IconMicrophone className="size-4" />
+                </Button>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon-sm"
+                  className="rounded-lg text-muted-foreground"
+                >
+                  <IconPhoto className="size-4" />
+                </Button>
+
+                <DropdownMenu>
+                  <DropdownMenuTrigger
+                    render={
+                      <Button
+                        type="button"
+                        variant="outline"
+                        className="ml-1 h-9 rounded-xl px-3 text-sm font-medium"
+                      />
+                    }
+                  >
+                    Macros
+                    <IconChevronDown className="size-4 text-muted-foreground" />
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent
+                    align="start"
+                    className="w-[19rem] rounded-2xl p-0"
+                  >
+                    <div className="border-b border-border/70 px-4 py-3">
+                      <div className="text-sm font-semibold text-foreground">
+                        Add Macros
+                      </div>
+                      <div className="relative mt-3">
+                        <IconSearch className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
+                        <Input
+                          value={templateQuery}
+                          onChange={(event) =>
+                            onTemplateQueryChange(event.target.value)
+                          }
+                          placeholder="Search macros"
+                          disabled={isSendingReply}
+                          className="h-10 rounded-xl border-border/70 pl-9"
+                        />
+                      </div>
+                    </div>
+                    <div className="scrollbar-hidden max-h-72 overflow-y-auto px-2 py-2">
+                      <div className="px-2 py-2 text-xs font-medium text-muted-foreground">
+                        Suggested replies
+                      </div>
+                      {filteredMacros.map((macro) => (
+                        <button
+                          key={macro}
+                          type="button"
+                          className="w-full rounded-xl px-2 py-2 text-left text-sm text-foreground/80 transition hover:bg-muted"
+                          onClick={() => onMacroInsert(macro)}
+                          disabled={isSendingReply}
+                        >
+                          {macro}
+                        </button>
+                      ))}
+                    </div>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <Button
+                  type="button"
+                  variant="ghost"
+                  className="h-9 rounded-xl px-3 text-sm font-medium"
+                  onClick={() => onSubmitReply("closed")}
+                  disabled={isSendingReply}
+                >
+                  {isSendingReply ? "Sending..." : "End Chat"}
+                </Button>
+                <Button
+                  type="button"
+                  className="h-9 rounded-xl px-4"
+                  onClick={() => onSubmitReply()}
+                  disabled={!draftMessage.trim() || isSendingReply}
+                >
+                  {isSendingReply ? "Sending..." : "Send"}
+                  <IconSend className="size-4" />
+                </Button>
+              </div>
             </div>
           </div>
-        </div>
-      </DiscussionComposerShell>
+        </DiscussionComposerShell>
       }
     >
       {conversationItems.map((item) => {
@@ -512,7 +511,7 @@ export function ConversationTabContent({
       {visiblePendingReply ? (
         <div
           key={visiblePendingReply.id}
-          className="animate-in fade-in-0 slide-in-from-bottom-3 duration-300 ease-[cubic-bezier(0.22,1,0.36,1)]"
+          className="animate-in duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] fade-in-0 slide-in-from-bottom-3"
         >
           <DiscussionMessageEntry
             author={currentUser}
@@ -662,9 +661,9 @@ export function TicketDetailRightPanel({
                         queueStatus === "closed"
                           ? "bg-zinc-500"
                           : queueStatus === "resolved"
-                            ? "bg-emerald-500"
+                            ? "bg-status-success"
                             : queueStatus === "pending"
-                              ? "bg-amber-500"
+                              ? "bg-status-warning"
                               : "bg-sky-500"
                       )}
                     />

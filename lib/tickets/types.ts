@@ -53,6 +53,7 @@ export interface Ticket {
   channel: TicketChannel
   trend: TicketTrend
   requester?: TicketPerson
+  accountName?: string
   assignee?: TicketAssignee
   followers?: TicketPerson[]
   tags?: string[]

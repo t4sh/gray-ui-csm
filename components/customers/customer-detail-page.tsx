@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useMemo, useRef, useState } from "react"
+import type { MouseEvent } from "react"
 import { usePathname, useRouter, useSearchParams } from "next/navigation"
 import {
   IconArrowLeft,
@@ -18,7 +19,10 @@ import { CustomerAssetsFilesTab } from "@/components/customers/customer-assets-f
 import { CustomerInitialAvatar } from "@/components/customers/customer-initial-avatar"
 import { CustomerMetricsGrid } from "@/components/customers/customer-metrics-grid"
 import { getCustomerBrandPresentation } from "@/components/customers/customer-brand"
+import { useCustomerTicketDrawers } from "@/components/customers/use-customer-ticket-drawers"
+import { useCustomerTicketPreviewQueryState } from "@/components/customers/use-customer-ticket-preview-query-state"
 import { TicketDrawer } from "@/components/tickets/ticket-drawer"
+import { TicketPreviewDrawer } from "@/components/tickets/ticket-preview-drawer"
 import { TicketPriorityLabel } from "@/components/ticket-priority-label"
 import {
   SharedActivityTabContent,
@@ -93,15 +97,7 @@ import {
   customerTicketStatusToneClassName,
 } from "@/lib/customers/presentation"
 import { type Customer, type CustomerAttachment } from "@/lib/customers/types"
-import type {
-  Ticket,
-  TicketAssignee,
-  TicketDrawerOrigin,
-  TicketPerson,
-  TicketPriority,
-  TicketQueueStatus,
-  TicketSubmitAction,
-} from "@/lib/tickets/types"
+import type { TicketDrawerOrigin } from "@/lib/tickets/types"
 import { cn } from "@/lib/utils"
 
 type CustomerDetailPageProps = {
@@ -202,16 +198,6 @@ const responseToneClassName = {
     "bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300",
 } as const
 
-const CUSTOMER_NEW_TICKET_ID = "__customer-new-ticket__"
-
-function formatTodayRequestDateLabel() {
-  return new Intl.DateTimeFormat("en-US", {
-    month: "2-digit",
-    day: "2-digit",
-    year: "numeric",
-  }).format(new Date())
-}
-
 function formatDateInputValue(date: Date) {
   const year = date.getFullYear()
   const month = String(date.getMonth() + 1).padStart(2, "0")
@@ -308,9 +294,12 @@ function matchesRequestDatePreset({
     (1000 * 60 * 60 * 24)
 
   if (filter === "older-than-90-days") return daysFromLatest > 90
-  if (filter === "last-90-days") return daysFromLatest >= 0 && daysFromLatest <= 90
-  if (filter === "last-30-days") return daysFromLatest >= 0 && daysFromLatest <= 30
-  if (filter === "last-7-days") return daysFromLatest >= 0 && daysFromLatest <= 7
+  if (filter === "last-90-days")
+    return daysFromLatest >= 0 && daysFromLatest <= 90
+  if (filter === "last-30-days")
+    return daysFromLatest >= 0 && daysFromLatest <= 30
+  if (filter === "last-7-days")
+    return daysFromLatest >= 0 && daysFromLatest <= 7
 
   return true
 }
@@ -323,114 +312,6 @@ function normalizeRequestDateFilter(
   )
 
   return matchedOption?.value ?? "all"
-}
-
-function extractCustomerTicketSequence(value: string) {
-  const matched = value.match(/(\d+)/)
-  if (!matched) return 0
-
-  const sequence = Number(matched[1])
-  return Number.isFinite(sequence) ? sequence : 0
-}
-
-function getNextCustomerTicketId(rows: CustomerTicketRow[]) {
-  const nextSequence =
-    rows.reduce((maxValue, row) => {
-      return Math.max(
-        maxValue,
-        extractCustomerTicketSequence(row.id),
-        extractCustomerTicketSequence(row.ticketNumber)
-      )
-    }, 0) + 1
-
-  return `T-${String(nextSequence).padStart(4, "0")}`
-}
-
-function toCustomerTicketPriority(priority: TicketPriority): "high" | "medium" | "low" {
-  if (priority === "urgent") return "high"
-  if (priority === "todo") return "low"
-  return priority
-}
-
-function toCustomerTicketStatus(status: TicketQueueStatus): "open" | "pending" | "resolved" {
-  if (status === "closed") return "resolved"
-  return status
-}
-
-function toCustomerTicketType(ticket: Ticket): "support" | "billing" | "technical" {
-  if (ticket.category === "billing") return "billing"
-  if (ticket.category === "technical") return "technical"
-  return "support"
-}
-
-function toQueueStatusAfterSubmit(
-  currentStatus: TicketQueueStatus,
-  action: TicketSubmitAction
-): TicketQueueStatus {
-  if (action === "resolved") return "resolved"
-  if (action === "pending") return "pending"
-  return currentStatus === "open" ? "pending" : currentStatus
-}
-
-function mapTicketToCustomerRow(ticket: Ticket, requestDate: string): CustomerTicketRow {
-  return {
-    id: ticket.id,
-    ticketNumber: ticket.ticketNumber,
-    subject: ticket.subject,
-    status: toCustomerTicketStatus(ticket.queueStatus),
-    priority: toCustomerTicketPriority(ticket.priority),
-    type: toCustomerTicketType(ticket),
-    requestDate,
-  }
-}
-
-function createCustomerDraftTicket({
-  customer,
-  nextTicketId,
-}: {
-  customer: Customer
-  nextTicketId: string
-}): Ticket {
-  return {
-    id: CUSTOMER_NEW_TICKET_ID,
-    ticketNumber: nextTicketId,
-    subject: "",
-    queueStatus: "open",
-    boardOrder: 0,
-    health:
-      customer.health === "at_risk"
-        ? "breached"
-        : customer.health === "watch"
-          ? "warning"
-          : "on-track",
-    channel: "email",
-    trend: "flat",
-    requester: {
-      name: customer.primaryContactName,
-      email: customer.primaryContactEmail,
-    },
-    assignee: {
-      name: customer.owner.name,
-      email: customer.owner.email,
-      avatarUrl: customer.owner.avatarUrl,
-    },
-    followers: [],
-    tags: customer.productAreas.slice(0, 3),
-    ticketType: "incident",
-    category: "other",
-    priority: "medium",
-    mine: customer.owner.email === currentUser.email,
-    escalated: customer.health === "at_risk",
-    pastDue: false,
-  }
-}
-
-function omitKey<TValue>(sourceRecord: Record<string, TValue>, keyToDelete: string) {
-  if (!(keyToDelete in sourceRecord)) return sourceRecord
-
-  const nextRecord = { ...sourceRecord }
-  delete nextRecord[keyToDelete]
-  return nextRecord
 }
 
 function buildActivityItems(customer: Customer): ActivityTimelineItem[] {
@@ -612,7 +493,10 @@ function EditableFieldList({
         )}
       >
         {values.map((value) => (
-          <div key={value} className={cn(valueLayout === "inline-wrap" && "shrink-0")}>
+          <div
+            key={value}
+            className={cn(valueLayout === "inline-wrap" && "shrink-0")}
+          >
             {renderValue(value)}
           </div>
         ))}
@@ -821,6 +705,11 @@ export function CustomerDetailPage({
   const router = useRouter()
   const pathname = usePathname()
   const searchParams = useSearchParams()
+  const {
+    ticketId: previewTicketId,
+    openTicketPreview: openTicketPreviewInUrl,
+    closeTicketPreview: closeTicketPreviewInUrl,
+  } = useCustomerTicketPreviewQueryState()
   const isMobile = useIsMobile()
   const attachmentStorageKey = `gray-csm:customer-attachments:${customer.id}`
   const didHydrateAttachmentsRef = useRef(false)
@@ -849,23 +738,13 @@ export function CustomerDetailPage({
   const [ticketRows, setTicketRows] = useState<CustomerTicketRow[]>(() =>
     buildCustomerTicketRows(customer)
   )
-  const [drawerTicketsById, setDrawerTicketsById] = useState<
-    Record<string, Ticket>
-  >({})
-  const [activeDrawerTicketId, setActiveDrawerTicketId] = useState<string | null>(
-    null
-  )
-  const [customerDrawerMode, setCustomerDrawerMode] = useState<"create" | "edit">(
-    "create"
-  )
-  const [customerDrawerOrigin, setCustomerDrawerOrigin] =
+  const [previewDrawerOrigin, setPreviewDrawerOrigin] =
     useState<TicketDrawerOrigin | null>(null)
-  const [drawerDraftsByTicketId, setDrawerDraftsByTicketId] = useState<
-    Record<string, string>
-  >({})
-  const [drawerReplyFromByTicketId, setDrawerReplyFromByTicketId] = useState<
-    Record<string, string>
-  >({})
+  const ticketDrawers = useCustomerTicketDrawers({
+    customer,
+    ticketRows,
+    setTicketRows,
+  })
   const [attachments, setAttachments] = useState<CustomerAttachment[]>(
     customer.attachments
   )
@@ -915,81 +794,36 @@ export function CustomerDetailPage({
 
   const activityItems = useMemo(() => buildActivityItems(customer), [customer])
   const allTicketRows = ticketRows
-  const activeDrawerTicket = activeDrawerTicketId
-    ? (drawerTicketsById[activeDrawerTicketId] ?? null)
-    : null
-  const activeDrawerDraft = activeDrawerTicketId
-    ? (drawerDraftsByTicketId[activeDrawerTicketId] ?? "")
-    : ""
-  const activeDrawerReplyFrom = activeDrawerTicketId
-    ? drawerReplyFromByTicketId[activeDrawerTicketId]
-    : undefined
-  const drawerAssigneeOptions = useMemo(() => {
-    const assigneeMap = new Map<string, TicketAssignee>()
+  const activePreviewTicket = ticketDrawers.getPreviewTicket(
+    previewTicketId
+  )
 
-    const registerAssignee = (person?: TicketPerson) => {
-      if (!person?.name || assigneeMap.has(person.name)) return
-      assigneeMap.set(person.name, person)
+  useEffect(() => {
+    if (previewTicketId && !activePreviewTicket) {
+      closeTicketPreviewInUrl()
     }
+  }, [activePreviewTicket, closeTicketPreviewInUrl, previewTicketId])
 
-    registerAssignee({
-      name: customer.owner.name,
-      email: customer.owner.email,
-      avatarUrl: customer.owner.avatarUrl,
-    })
-    registerAssignee({
-      name: currentUser.name,
-      email: currentUser.email,
-      avatarUrl: currentUser.avatar,
-    })
-    Object.values(drawerTicketsById).forEach((ticket) =>
-      registerAssignee(ticket.assignee)
-    )
+  const openTicketPreview = (
+    row: CustomerTicketRow,
+    event: MouseEvent<HTMLButtonElement>
+  ) => {
+    if (ticketDrawers.openCreatedTicketDrawer(row.id)) return
 
-    return Array.from(assigneeMap.values()).sort((left, right) =>
-      left.name.localeCompare(right.name)
-    )
-  }, [customer.owner.avatarUrl, customer.owner.email, customer.owner.name, drawerTicketsById])
-  const drawerPeopleOptions = useMemo(() => {
-    const peopleMap = new Map<string, TicketPerson>()
-
-    const registerPerson = (person?: TicketPerson) => {
-      if (!person?.name || peopleMap.has(person.name)) return
-      peopleMap.set(person.name, person)
-    }
-
-    registerPerson({
-      name: customer.primaryContactName,
-      email: customer.primaryContactEmail,
+    const rect = event.currentTarget.getBoundingClientRect()
+    setPreviewDrawerOrigin({
+      x: rect.x,
+      y: rect.y,
+      width: rect.width,
+      height: rect.height,
     })
-    registerPerson({
-      name: customer.owner.name,
-      email: customer.owner.email,
-      avatarUrl: customer.owner.avatarUrl,
-    })
-    registerPerson({
-      name: currentUser.name,
-      email: currentUser.email,
-      avatarUrl: currentUser.avatar,
-    })
+    openTicketPreviewInUrl(row.id)
+  }
 
-    Object.values(drawerTicketsById).forEach((ticket) => {
-      registerPerson(ticket.requester)
-      registerPerson(ticket.assignee)
-      ;(ticket.followers ?? []).forEach((follower) => registerPerson(follower))
-    })
-
-    return Array.from(peopleMap.values()).sort((left, right) =>
-      left.name.localeCompare(right.name)
-    )
-  }, [
-    customer.owner.avatarUrl,
-    customer.owner.email,
-    customer.owner.name,
-    customer.primaryContactEmail,
-    customer.primaryContactName,
-    drawerTicketsById,
-  ])
+  const closeTicketPreview = () => {
+    setPreviewDrawerOrigin(null)
+    closeTicketPreviewInUrl()
+  }
   const latestRequestDate = useMemo(
     () => getLatestRequestDate(allTicketRows),
     [allTicketRows]
@@ -1009,7 +843,10 @@ export function CustomerDetailPage({
   )
   const appliedRequestDateFrom = searchParams.get("requestDateFrom") ?? ""
   const appliedRequestDateTo = searchParams.get("requestDateTo") ?? ""
-  const summaryMetrics = useMemo(() => buildCustomerDetailMetrics(customer), [customer])
+  const summaryMetrics = useMemo(
+    () => buildCustomerDetailMetrics(customer),
+    [customer]
+  )
 
   const filteredTicketRows = useMemo(() => {
     const normalizedQuery = query.trim().toLowerCase()
@@ -1064,8 +901,7 @@ export function CustomerDetailPage({
     const nextType = patch.type ?? appliedTypeFilter
     const nextPriority = patch.priority ?? appliedPriorityFilter
     const nextRequestDate = patch.requestDate ?? appliedRequestDateFilter
-    const nextRequestDateFrom =
-      patch.requestDateFrom ?? appliedRequestDateFrom
+    const nextRequestDateFrom = patch.requestDateFrom ?? appliedRequestDateFrom
     const nextRequestDateTo = patch.requestDateTo ?? appliedRequestDateTo
 
     if (nextTab === "ticket") {
@@ -1138,175 +974,6 @@ export function CustomerDetailPage({
       requestDateTo: draftRequestDateTo,
     })
     setIsMobileFilterOpen(false)
-  }
-
-  const closeCustomerTicketDrawer = () => {
-    if (activeDrawerTicketId === CUSTOMER_NEW_TICKET_ID) {
-      setDrawerTicketsById((currentTickets) =>
-        omitKey(currentTickets, CUSTOMER_NEW_TICKET_ID)
-      )
-      setDrawerDraftsByTicketId((currentDrafts) =>
-        omitKey(currentDrafts, CUSTOMER_NEW_TICKET_ID)
-      )
-      setDrawerReplyFromByTicketId((currentReplyFromMap) =>
-        omitKey(currentReplyFromMap, CUSTOMER_NEW_TICKET_ID)
-      )
-    }
-
-    setActiveDrawerTicketId(null)
-    setCustomerDrawerMode("create")
-    setCustomerDrawerOrigin(null)
-  }
-
-  const handleCreateTicket = (event?: React.MouseEvent<HTMLButtonElement>) => {
-    if (event) {
-      const rect = event.currentTarget.getBoundingClientRect()
-      setCustomerDrawerOrigin({
-        x: rect.x,
-        y: rect.y,
-        width: rect.width,
-        height: rect.height,
-      })
-    } else {
-      setCustomerDrawerOrigin(null)
-    }
-
-    const nextTicketId = getNextCustomerTicketId(allTicketRows)
-    const draftTicket = createCustomerDraftTicket({ customer, nextTicketId })
-    setDrawerTicketsById((currentTickets) => ({
-      ...currentTickets,
-      [CUSTOMER_NEW_TICKET_ID]: draftTicket,
-    }))
-    setCustomerDrawerMode("create")
-    setActiveDrawerTicketId(CUSTOMER_NEW_TICKET_ID)
-  }
-
-  const openCreatedTicketDrawer = (ticketId: string) => {
-    if (!drawerTicketsById[ticketId]) return
-
-    setCustomerDrawerMode("edit")
-    setCustomerDrawerOrigin(null)
-    setActiveDrawerTicketId(ticketId)
-  }
-
-  const handleDrawerTicketUpdate = (
-    ticketId: string,
-    updater: (ticket: Ticket) => Ticket
-  ) => {
-    let nextTicket: Ticket | null = null
-
-    setDrawerTicketsById((currentTickets) => {
-      const currentTicket = currentTickets[ticketId]
-      if (!currentTicket) return currentTickets
-
-      nextTicket = updater(currentTicket)
-      return {
-        ...currentTickets,
-        [ticketId]: nextTicket!,
-      }
-    })
-
-    if (!nextTicket || ticketId === CUSTOMER_NEW_TICKET_ID) return
-
-    setTicketRows((currentRows) =>
-      currentRows.map((row) =>
-        row.id === ticketId
-          ? mapTicketToCustomerRow(nextTicket!, row.requestDate)
-          : row
-      )
-    )
-  }
-
-  const handleDrawerDraftMessageChange = (nextDraft: string) => {
-    if (!activeDrawerTicketId) return
-
-    setDrawerDraftsByTicketId((currentDrafts) => ({
-      ...currentDrafts,
-      [activeDrawerTicketId]: nextDraft,
-    }))
-  }
-
-  const handleDrawerReplyFromAddressChange = (
-    ticketId: string,
-    nextAddress: string
-  ) => {
-    setDrawerReplyFromByTicketId((currentReplyFromMap) => ({
-      ...currentReplyFromMap,
-      [ticketId]: nextAddress,
-    }))
-  }
-
-  const handleDrawerSubmitMessage = (
-    ticketId: string,
-    action: TicketSubmitAction = "send"
-  ) => {
-    const currentTicket = drawerTicketsById[ticketId]
-    if (!currentTicket) return
-
-    if (ticketId === CUSTOMER_NEW_TICKET_ID || customerDrawerMode === "create") {
-      const subject = currentTicket.subject.trim()
-      if (!subject) return
-
-      const submittedTicketId = getNextCustomerTicketId(allTicketRows)
-      const requestDate = formatTodayRequestDateLabel()
-      const submittedTicket: Ticket = {
-        ...currentTicket,
-        id: submittedTicketId,
-        ticketNumber: submittedTicketId,
-        subject,
-        queueStatus: "open",
-        boardOrder: 0,
-      }
-
-      setTicketRows((currentRows) => [
-        mapTicketToCustomerRow(submittedTicket, requestDate),
-        ...currentRows,
-      ])
-      setDrawerTicketsById((currentTickets) => {
-        const withoutCreateDraft = omitKey(
-          currentTickets,
-          CUSTOMER_NEW_TICKET_ID
-        )
-        return {
-          ...withoutCreateDraft,
-          [submittedTicketId]: submittedTicket,
-        }
-      })
-      setDrawerDraftsByTicketId((currentDrafts) =>
-        omitKey(currentDrafts, CUSTOMER_NEW_TICKET_ID)
-      )
-      setDrawerReplyFromByTicketId((currentReplyFromMap) =>
-        omitKey(currentReplyFromMap, CUSTOMER_NEW_TICKET_ID)
-      )
-      closeCustomerTicketDrawer()
-      return
-    }
-
-    const draftMessage = drawerDraftsByTicketId[ticketId]?.trim()
-    if (!draftMessage) return
-
-    setDrawerDraftsByTicketId((currentDrafts) => ({
-      ...currentDrafts,
-      [ticketId]: "",
-    }))
-
-    const nextQueueStatus = toQueueStatusAfterSubmit(currentTicket.queueStatus, action)
-    const updatedTicket = {
-      ...currentTicket,
-      queueStatus: nextQueueStatus,
-    }
-
-    setDrawerTicketsById((currentTickets) => ({
-      ...currentTickets,
-      [ticketId]: updatedTicket,
-    }))
-    setTicketRows((currentRows) =>
-      currentRows.map((row) =>
-        row.id === ticketId
-          ? mapTicketToCustomerRow(updatedTicket, row.requestDate)
-          : row
-      )
-    )
   }
 
   const handleAddInternalNote = () => {
@@ -1397,11 +1064,11 @@ export function CustomerDetailPage({
           const fromDate = new Date(latestDate)
           fromDate.setDate(fromDate.getDate() - 90)
 
-          setDraftRequestDateFrom((currentValue) =>
-            currentValue || formatDateInputValue(fromDate)
+          setDraftRequestDateFrom(
+            (currentValue) => currentValue || formatDateInputValue(fromDate)
           )
-          setDraftRequestDateTo((currentValue) =>
-            currentValue || formatDateInputValue(latestDate)
+          setDraftRequestDateTo(
+            (currentValue) => currentValue || formatDateInputValue(latestDate)
           )
           return
         }
@@ -1603,7 +1270,7 @@ export function CustomerDetailPage({
                       <Button
                         size="sm"
                         className="h-9 rounded-xl"
-                        onClick={handleCreateTicket}
+                        onClick={ticketDrawers.handleCreateTicket}
                       >
                         Add new ticket
                       </Button>
@@ -1687,14 +1354,9 @@ export function CustomerDetailPage({
                                       <TooltipTrigger
                                         type="button"
                                         className="min-w-0 truncate text-left font-medium text-foreground outline-none hover:underline focus-visible:underline"
-                                        onClick={() => {
-                                          if (drawerTicketsById[row.id]) {
-                                            openCreatedTicketDrawer(row.id)
-                                            return
-                                          }
-
-                                          router.push(`/tickets/${row.id}`)
-                                        }}
+                                        onClick={(event) =>
+                                          openTicketPreview(row, event)
+                                        }
                                       >
                                         {row.subject}
                                       </TooltipTrigger>
@@ -1976,23 +1638,54 @@ export function CustomerDetailPage({
       </div>
 
       <TicketDrawer
-        open={activeDrawerTicket !== null}
-        mode={customerDrawerMode}
-        ticket={activeDrawerTicket}
-        assigneeOptions={drawerAssigneeOptions}
-        peopleOptions={drawerPeopleOptions}
-        draftMessage={activeDrawerDraft}
-        replyFromAddress={activeDrawerReplyFrom}
-        origin={customerDrawerOrigin}
-        onDraftMessageChange={handleDrawerDraftMessageChange}
+        open={ticketDrawers.activeDrawerTicket !== null}
+        mode={ticketDrawers.customerDrawerMode}
+        ticket={ticketDrawers.activeDrawerTicket}
+        assigneeOptions={ticketDrawers.drawerAssigneeOptions}
+        peopleOptions={ticketDrawers.drawerPeopleOptions}
+        draftMessage={ticketDrawers.activeDrawerDraft}
+        replyFromAddress={ticketDrawers.activeDrawerReplyFrom}
+        origin={ticketDrawers.customerDrawerOrigin}
+        onDraftMessageChange={ticketDrawers.handleDrawerDraftMessageChange}
         onOpenChange={(open) => {
           if (!open) {
-            closeCustomerTicketDrawer()
+            ticketDrawers.closeCustomerTicketDrawer()
           }
         }}
-        onUpdateTicket={handleDrawerTicketUpdate}
-        onSubmitMessage={handleDrawerSubmitMessage}
-        onReplyFromAddressChange={handleDrawerReplyFromAddressChange}
+        onUpdateTicket={ticketDrawers.handleDrawerTicketUpdate}
+        onSubmitMessage={ticketDrawers.handleDrawerSubmitMessage}
+        onReplyFromAddressChange={
+          ticketDrawers.handleDrawerReplyFromAddressChange
+        }
+      />
+
+      <TicketPreviewDrawer
+        open={activePreviewTicket !== null}
+        ticket={activePreviewTicket}
+        assigneeOptions={ticketDrawers.drawerAssigneeOptions}
+        origin={previewDrawerOrigin}
+        draftMessage={ticketDrawers.getPreviewDraft(previewTicketId)}
+        replyFromAddress={ticketDrawers.getPreviewReplyFrom(
+          previewTicketId
+        )}
+        onDraftMessageChange={(nextDraft) => {
+          if (previewTicketId) {
+            ticketDrawers.handlePreviewDraftMessageChange(
+              previewTicketId,
+              nextDraft
+            )
+          }
+        }}
+        onOpenChange={(open) => {
+          if (!open) {
+            closeTicketPreview()
+          }
+        }}
+        onUpdateTicket={ticketDrawers.handlePreviewTicketUpdate}
+        onSubmitMessage={ticketDrawers.handlePreviewSubmitMessage}
+        onReplyFromAddressChange={
+          ticketDrawers.handleDrawerReplyFromAddressChange
+        }
       />
 
       <Sheet open={isMobileFilterOpen} onOpenChange={setIsMobileFilterOpen}>

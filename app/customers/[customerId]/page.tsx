@@ -17,6 +17,7 @@ type CustomerDetailRouteProps = {
     q?: string
     type?: string
     priority?: string
+    ticket?: string
   }>
 }
 

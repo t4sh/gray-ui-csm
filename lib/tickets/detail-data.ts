@@ -198,8 +198,8 @@ function getScenario(ticket: Ticket, accountName: string): TicketScenario {
 }
 
 export function buildTicketDetail(ticket: Ticket): TicketDetail {
-  const customer = pickFromPool(ticket.id, customerPool)
-  const accountName = pickFromPool(ticket.id, accountPool)
+  const customer = ticket.requester ?? pickFromPool(ticket.id, customerPool)
+  const accountName = ticket.accountName ?? pickFromPool(ticket.id, accountPool)
   const agent = getSupportAgent()
   const scenario = getScenario(ticket, accountName)
   const priorityLabel = titleCase(ticket.priority)
