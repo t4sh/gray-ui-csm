@@ -9,12 +9,9 @@ import {
   IconCommand,
   IconInbox,
   IconLock,
-  IconMessage2,
-  IconNotebook,
   IconSettingsAutomation,
   IconTicket,
   IconUser,
-  IconUsersGroup,
 } from "@tabler/icons-react"
 
 import { CustomerSidebarFilters } from "@/components/customers/customer-sidebar-filters"
@@ -51,10 +48,7 @@ function renderSidebarIcon(icon: CsmRouteIconKey) {
   if (icon === "inbox") return <IconInbox />
   if (icon === "tickets") return <IconTicket />
   if (icon === "customers") return <IconUser />
-  if (icon === "accounts") return <IconUsersGroup />
-  if (icon === "internal-notes") return <IconNotebook />
   if (icon === "knowledge-base") return <IconBook />
-  if (icon === "macros") return <IconMessage2 />
   if (icon === "automation") return <IconSettingsAutomation />
   return <IconLock />
 }

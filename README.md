@@ -46,7 +46,7 @@ This repository is intentionally built as a **design engineering showcase**:
   - Reply workflows with macro suggestions
 
 - **CSM Navigation Sections**
-  - Inbox, Customers, Accounts, Internal Notes, Knowledge Base, Macros, Automation, Settings
+  - Inbox, Customers, Knowledge Base, Automation, Settings
   - Shared route metadata and consistent page scaffolding
 
 ## Design Engineering Focus

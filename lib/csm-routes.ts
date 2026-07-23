@@ -2,10 +2,7 @@ export type CsmRouteIconKey =
   | "inbox"
   | "tickets"
   | "customers"
-  | "accounts"
-  | "internal-notes"
   | "knowledge-base"
-  | "macros"
   | "automation"
   | "settings"
 
@@ -108,46 +105,6 @@ export const csmRoutes: CsmRoute[] = [
     ],
   },
   {
-    title: "Accounts",
-    path: "/accounts",
-    description: "B2B account-level health and ownership visibility.",
-    icon: "accounts",
-    templateMetrics: [
-      { label: "Managed Accounts", value: "286" },
-      { label: "Renewals This Month", value: "22" },
-      { label: "Expansion Signals", value: "31", tone: "positive" },
-    ],
-    sidebarPreview: [
-      {
-        title: "Account-level signals",
-        subject: "B2B ownership view",
-        date: "Today",
-        teaser:
-          "Usage, risk, and ownership signals are grouped by account for CSM teams.",
-      },
-    ],
-  },
-  {
-    title: "Internal Notes",
-    path: "/internal-notes",
-    description: "Private collaboration and internal handoff context.",
-    icon: "internal-notes",
-    templateMetrics: [
-      { label: "Handoffs Today", value: "18" },
-      { label: "Notes Linked to Tickets", value: "76%" },
-      { label: "Untriaged Mentions", value: "4", tone: "warning" },
-    ],
-    sidebarPreview: [
-      {
-        title: "Private collaboration",
-        subject: "Internal-only thread",
-        date: "Today",
-        teaser:
-          "Keep agent-to-agent handoff context private and separate from customer chat.",
-      },
-    ],
-  },
-  {
     title: "Knowledge Base",
     path: "/knowledge-base",
     description: "Article operations and deflection effectiveness tracking.",
@@ -164,26 +121,6 @@ export const csmRoutes: CsmRoute[] = [
         date: "Today",
         teaser:
           "Track which support articles actually reduce ticket inflow over time.",
-      },
-    ],
-  },
-  {
-    title: "Macros",
-    path: "/macros",
-    description: "Reusable responses for consistent agent operations.",
-    icon: "macros",
-    templateMetrics: [
-      { label: "Saved Macros", value: "64" },
-      { label: "Adoption Rate", value: "73%", tone: "positive" },
-      { label: "Needs Update", value: "9", tone: "warning" },
-    ],
-    sidebarPreview: [
-      {
-        title: "Response templates",
-        subject: "Consistent communication",
-        date: "Today",
-        teaser:
-          "Use one-click macro templates for repetitive requests and policy consistency.",
       },
     ],
   },
